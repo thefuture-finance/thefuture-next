@@ -1,4 +1,3 @@
-import superjson from "superjson";
 /**
  * This is your entry point to setup the root configuration for tRPC on the server.
  * - `initTRPC` should only be used once per app.
@@ -10,8 +9,6 @@ import superjson from "superjson";
  */
 import { TRPCError, initTRPC } from "@trpc/server";
 import { Context } from "./context";
-// import { OpenApiMeta } from "trpc-openapi";
-import { User } from "../models/User";
 
 /**
  * Unprotected procedure

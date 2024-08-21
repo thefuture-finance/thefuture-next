@@ -23,6 +23,14 @@ const sepolia = {
   rpcUrl: "https://rpc.sepolia.org",
 };
 
+const scroll = {
+  chainId: 534352,
+  name: "Ethereum",
+  currency: "ETH",
+  explorerUrl: "https://scrollscan.com/",
+  rpcUrl: "https://rpc.scroll.io",
+};
+
 const optimism = {
   chainId: 10,
   name: "Ethereum",
@@ -54,7 +62,7 @@ const ethersConfig = defaultConfig({
 // 5. Create a AppKit instance
 createWeb3Modal({
   ethersConfig,
-  chains: [mainnet, sepolia, optimism],
+  chains: [mainnet, scroll],
   projectId,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
 });

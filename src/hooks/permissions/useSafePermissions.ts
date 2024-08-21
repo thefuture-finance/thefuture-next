@@ -6,7 +6,7 @@ import type { Methods } from "@safe-global/safe-apps-sdk";
 //   PermissionRequest,
 // } from "@safe-global/safe-apps-sdk/dist/types/types/permissions";
 
-import { PermissionStatus } from "@/components/apps/types";
+import { PermissionStatus } from "@/app/_components/apps/types";
 import useLocalStorage from "@/services/local-storage/useLocalStorage";
 import { trimTrailingSlash } from "@/utils/url";
 

@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import ky from "ky";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -16,17 +15,6 @@ import {
 import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/app/_components/ui/button";
-import { Checkbox } from "@/app/_components/ui/checkbox";
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/app/_components/ui/dropdown-menu";
-import { Input } from "@/app/_components/ui/input";
 import {
   Table,
   TableBody,
@@ -35,10 +23,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/_components/ui/table";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { useState } from "react";
 import {
   getPortfolioData,
   PortfolioAssetData,
@@ -47,6 +33,7 @@ import {
 
 import { useSpinnerStore } from "@/store/spinner";
 import { roundNumber, roundPrice } from "@/utils/formatters";
+import { useEffect } from "react";
 
 export const columns: ColumnDef<PortfolioAssetData>[] = [
   {
@@ -68,23 +55,6 @@ export const columns: ColumnDef<PortfolioAssetData>[] = [
   },
 
   {
-    accessorKey: "amount",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Amount
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className=" font-medium">{roundPrice(row.getValue("amount"))}</div>
-    ),
-  },
-  {
     accessorKey: "price",
     header: ({ column }) => {
       return (
@@ -101,6 +71,40 @@ export const columns: ColumnDef<PortfolioAssetData>[] = [
       <div className=" font-medium">{roundPrice(row.getValue("price"))}</div>
     ),
   },
+  {
+    accessorKey: "balance",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Balance
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <div className=" font-medium">{roundPrice(row.getValue("balance"))}</div>
+    ),
+  },
+  {
+    accessorKey: "value",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Value
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    cell: ({ row }) => (
+      <div className=" font-medium">{roundPrice(row.getValue("value"))}</div>
+    ),
+  },
 ];
 
 export function PortfolioTable({
@@ -111,6 +115,10 @@ export function PortfolioTable({
   address: String;
 }) {
   const setSpinner = useSpinnerStore((state) => state.setSpinner);
+
+  useEffect(() => {
+    setSpinner(true);
+  }, [address, setSpinner]);
 
   const {
     data,
@@ -124,10 +132,6 @@ export function PortfolioTable({
     initialData,
     refetchInterval: 4000,
   });
-
-  if (isLoading) {
-    setSpinner(true);
-  }
 
   if (isFetched) {
     setSpinner(false);
@@ -187,12 +191,14 @@ export function PortfolioTable({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row, index) => (
                 <TableRow
                   className="bg-[#353535] h-20 rounded-lg text-xl cursor-pointer"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  onClick={() => router.push(`/tokens/${row.getValue("id")}`)}
+                  onClick={() =>
+                    router.push(`/tokens/${data.assets[index].id}`)
+                  }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

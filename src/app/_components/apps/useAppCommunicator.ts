@@ -23,10 +23,6 @@ import type {
   ChainInfo,
 } from "@safe-global/safe-apps-sdk";
 import { Methods, RPC_CALLS } from "@safe-global/safe-apps-sdk";
-// import type {
-//   Permission,
-//   PermissionRequest,
-// } from "@safe-global/safe-apps-sdk/dist/types/types/permissions";
 import type { SafeSettings } from "@safe-global/safe-apps-sdk";
 import AppCommunicator from "@/services/apps/AppCommunicator";
 import { Errors, logError } from "@/services/exception/exceptions";

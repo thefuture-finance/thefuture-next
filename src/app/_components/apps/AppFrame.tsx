@@ -88,7 +88,7 @@ const AppFrame = ({
 
   useEffect(() => {
     iframeRef.current.src += "";
-  }, [address]);
+  }, [address, iframeRef]);
 
   const onRejectPermissionRequest = (requestId?: RequestId) => {
     if (requestId) {
@@ -116,7 +116,7 @@ const AppFrame = ({
     }
 
     setAppIsLoading(false);
-  }, [appUrl, iframeRef, setAppIsLoading, router]);
+  }, [appUrl, iframeRef, setAppIsLoading]);
 
   // useEffect(() => {
   //   if (!appIsLoading && !isBackendAppsLoading) {

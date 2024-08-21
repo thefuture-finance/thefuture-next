@@ -6,12 +6,12 @@ import { Sidebar } from "@/app/_components/Sidebar";
 import { AppKit } from "@/context/web3modal";
 import { Topbar } from "@/app/_components/Topbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import ClipLoader from "react-spinners/ClipLoader";
 import { useState } from "react";
 import { useSpinnerStore } from "@/store/spinner";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import TRPCProvider from "@/app/_trpc/TRPCProvider";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -30,6 +30,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <TRPCProvider>
+          <div
+            className={`z-[90] absolute w-full h-full bg-gray-300 opacity-30 ${loading ? "block" : "hidden"}`}
+          />
           <ClipLoader
             className="absolute top-[calc(50%-250px)] left-[calc(50%-250px)] opacity-80 z-[90]"
             color={color}
@@ -40,11 +43,11 @@ export default function RootLayout({
           />
           <QueryClientProvider client={queryClient}>
             <AppKit>
-              <div className="flex h-full w-full">
+              <div className="relative flex h-full w-full overflow-hidden">
                 <Sidebar />
-                <div className="relative grow mr-5 mt-5 mb-8 rounded-3xl bg-[rgba(65,65,65)] z-10">
+                <div className="grow mr-5 mt-5 mb-8 rounded-3xl bg-[rgba(65,65,65)] z-10 overflow-y-auto overflow-x-hidden">
                   {children}
-                  <div className="absolute bottom-[-32px] w-full flex justify-center h-8 items-center">
+                  <div className="absolute bottom-0 w-[calc(100%-280px)] flex justify-center h-8 items-center">
                     <span className="text-[#F7F7F7] text-[16px] leading-[19px] font-semibold">
                       TheFuture All Rights Reserverd 2024
                     </span>
@@ -52,6 +55,7 @@ export default function RootLayout({
                 </div>
               </div>
             </AppKit>
+            {/* <ReactQueryDevtools /> */}
           </QueryClientProvider>
           <ToastContainer />
         </TRPCProvider>

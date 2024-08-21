@@ -1,9 +1,9 @@
 "use client";
 import { useState, useEffect, useContext, type MutableRefObject } from "react";
-import type { UseAppCommunicatorHandlers } from "@/components/apps/useAppCommunicator";
+import type { UseAppCommunicatorHandlers } from "@/app/_components/apps/useAppCommunicator";
 import useAppCommunicator, {
   CommunicatorMessages,
-} from "@/components/apps/useAppCommunicator";
+} from "@/app/_components/apps/useAppCommunicator";
 import type { Methods } from "@safe-global/safe-apps-sdk";
 import {
   type BaseTransaction,

@@ -3,6 +3,7 @@ import { PortfolioTable } from "@/app/_components/Portfolio/PortfolioTable";
 import PortfolioTopBard from "@/app/_components/Portfolio/PortfolioTopBar";
 import { isValidEthereumAddress } from "@/utils/regex";
 import { useSpinnerStore } from "../../store/spinner";
+import UnknownPortfolioAddress from "../_components/Portfolio/UnknownPortfolioAddress";
 
 export default async function Portfolio({
   searchParams,
@@ -15,9 +16,7 @@ export default async function Portfolio({
         <div className="w-full h-full flex justify-center items-center overflow-y-scroll">
           <div className="w-[1200px] h-full">
             <PortfolioTopBard address={""} />
-            <div className="flex justify-center w-full">
-              Select a valid Address
-            </div>
+            <UnknownPortfolioAddress />
           </div>
         </div>
       </>

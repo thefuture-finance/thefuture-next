@@ -302,12 +302,12 @@ export default function ExploreTable({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
+              table.getRowModel().rows.map((row, index) => (
                 <TableRow
                   className="bg-[#353535] h-20 rounded-lg text-xl cursor-pointer"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  onClick={() => router.push(`/tokens/${row.getValue("id")}`)}
+                  onClick={() => router.push(`/tokens/${data[index].id}`)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

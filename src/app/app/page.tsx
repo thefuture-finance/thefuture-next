@@ -11,9 +11,9 @@ export default function Apps({
       <div className="w-full h-full flex justify-center relative">
         <Link
           href="/apps"
-          className="absolute top-6 left-6 cursor-pointer hover:bg-green-300 bg-[#343434] rounded-2xl p-4"
+          className="absolute top-[calc(50%-32px)] h-8 left-0 cursor-pointer hover:bg-[#373737] bg-[#222222] rounded-r-2xl p-4 flex justify-center items-center text-[#CDC1B0]"
         >
-          back
+          Go Back
         </Link>
         <div className="h-full w-full">
           <AppFrame appUrl={searchParams.appUrl} allowedFeaturesList={""} />

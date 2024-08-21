@@ -1,10 +1,16 @@
 "use client";
-import ConnectWallet from "./ConnectWallet";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 
 import ScrollNameIcon from "~/public/scrollName.svg";
 import ExampleLogoIcon from "~/public/home.svg";
 import TheFutureIcon from "~/public/theFutureLogo.svg";
+const DynamicConnectWallet = dynamic(
+  () => import("@/app/_components/ConnectWallet"),
+  {
+    ssr: false,
+  },
+);
 
 import { useParams, usePathname } from "next/navigation";
 
@@ -150,7 +156,7 @@ export function Sidebar() {
             <ScrollNameIcon />
           </div>
           <div className="bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center">
-            <ConnectWallet />
+            <DynamicConnectWallet />
           </div>
         </div>
       </div>

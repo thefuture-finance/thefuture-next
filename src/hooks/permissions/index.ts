@@ -1,5 +1,5 @@
 import { RestrictedMethods } from "@safe-global/safe-apps-sdk";
-import type { AllowedFeatures } from "@/components/apps/types";
+import type { AllowedFeatures } from "@/app/_components/apps/types";
 import { capitalize } from "@/utils/formatters";
 
 type PermissionsDisplayType = {
