@@ -9,13 +9,13 @@ export function extractParts(
   firstCharacters: number,
   lastCharacters: number,
 ): String {
-  if (str.length < firstCharacters + lastCharacters) {
-    return "String is too short for the specified lengths.";
+  if (str?.length < firstCharacters + lastCharacters) {
+    return null;
   }
 
-  let firstPart = str.slice(0, firstCharacters);
+  let firstPart = str?.slice(0, firstCharacters);
 
-  let lastPart = str.slice(-lastCharacters);
+  let lastPart = str?.slice(-lastCharacters);
 
   return `${firstPart}...${lastPart}`;
 }
@@ -61,4 +61,35 @@ export function roundPrice(
     return roundNumber(num, thresholdScale);
   }
   return roundNumber(num, scale, true);
+}
+
+export function isSmaller(
+  value: number | null,
+  threshold: number,
+  roundFactor: number | null = null,
+): string {
+  if (typeof value !== "number") return "0";
+  if (roundFactor != null) {
+    value = Number(roundNumber(value, roundFactor));
+  }
+  if (value >= threshold) return value.toString();
+  return `< ${threshold}`;
+}
+
+export function nFormatter(num: number | string, digits: number) {
+  num = Number(num);
+  const lookup = [
+    { value: 1, symbol: "" },
+    { value: 1e3, symbol: "k" },
+    { value: 1e6, symbol: "M" },
+    { value: 1e9, symbol: "G" },
+    { value: 1e12, symbol: "T" },
+    { value: 1e15, symbol: "P" },
+    { value: 1e18, symbol: "E" },
+  ];
+  const regexp = /\.0+$|(?<=\.[0-9]*[1-9])0+$/;
+  const item = lookup.findLast((item) => num >= item.value);
+  return item
+    ? (num / item.value).toFixed(digits).replace(regexp, "").concat(item.symbol)
+    : "0";
 }

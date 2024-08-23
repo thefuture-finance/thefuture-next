@@ -9,10 +9,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import ClipLoader from "react-spinners/ClipLoader";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSpinnerStore } from "@/store/spinner";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import TRPCProvider from "@/app/_trpc/TRPCProvider";
+import { useAccountInfo } from "@/store/getAccountInfo";
+import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +27,14 @@ export default function RootLayout({
 }>) {
   let [color, setColor] = useState("#ffffff");
   const loading = useSpinnerStore((state) => state.isSpinnerActive);
+  const { accountInfo, setSelectedAccount } = useAccountInfo();
+  const { address } = useWeb3ModalAccount();
+  useEffect(() => {
+    if (!accountInfo.selectedAccount.isSmart) {
+      setSelectedAccount(address, accountInfo.selectedAccount.isSmart);
+    }
+    console.log(accountInfo.selectedAccount.address);
+  }, [address]);
 
   return (
     <html lang="en">
@@ -45,7 +55,7 @@ export default function RootLayout({
             <AppKit>
               <div className="relative flex h-full w-full overflow-hidden">
                 <Sidebar />
-                <div className="grow mr-5 mt-5 mb-8 rounded-3xl bg-[rgba(65,65,65)] z-10 overflow-y-auto overflow-x-hidden">
+                <div className="grow mr-5 mt-5 mb-8 rounded-3xl bg-[rgba(65,65,65)] z-10 shadow-[inset_0_0px_20px_20px_rgba(0,0,0,0.6)] overflow-auto">
                   {children}
                   <div className="absolute bottom-0 w-[calc(100%-280px)] flex justify-center h-8 items-center">
                     <span className="text-[#F7F7F7] text-[16px] leading-[19px] font-semibold">
@@ -55,7 +65,7 @@ export default function RootLayout({
                 </div>
               </div>
             </AppKit>
-            {/* <ReactQueryDevtools /> */}
+            <ReactQueryDevtools />
           </QueryClientProvider>
           <ToastContainer />
         </TRPCProvider>

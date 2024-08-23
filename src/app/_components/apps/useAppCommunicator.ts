@@ -228,7 +228,6 @@ const useAppCommunicator = (
     communicator?.on(Methods.requestAddressBook, (msg) => {
       return handlers.onRequestAddressBook(msg.origin);
     });
-    console.log("changed");
   }, [walletProvider, handlers, communicator]);
 
   return communicator;

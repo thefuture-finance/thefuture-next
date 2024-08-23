@@ -22,7 +22,7 @@ export default function Apps() {
         category: ["Defi", "Staking"],
         socials: [],
         is_favorites: true,
-        appUrl: "https://app.uniswap.org/",
+        appUrl: "https://swap.cow.fi/#/1/swap/WETH",
         logo: "/assets/images/lidoLogo.png",
         name: "Lido Staking",
         description: "Lido is the liquid staking solution for Ethereum.",

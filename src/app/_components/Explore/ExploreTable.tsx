@@ -193,16 +193,6 @@ export const columns: ColumnDef<CoinData>[] = [
   },
   {
     accessorKey: "isfavorite",
-    header: ({ column }) => {
-      return <div></div>;
-    },
-    cell: ({ row }) => {
-      return (
-        <div className="font-medium">
-          {row.getValue("isfavorite") ? <div>fav</div> : <div>not fav</div>}
-        </div>
-      );
-    },
   },
 ];
 

@@ -2,6 +2,7 @@
 import ky from "ky";
 import { writeFileSync } from "fs";
 
+const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 export type CoinData = {
   id: String;
   assetName: String;
@@ -170,7 +171,63 @@ export async function getPortfolioData(address: String) {
     return err;
   }
 }
-
 import filteredCoins from "~/data.json";
 
 export async function getApps() {}
+
+export type CoinInfo = {
+  id: string;
+  symbol: string;
+  name: string;
+  price: string;
+  hour24: number;
+  day30: number;
+  day60: number;
+  year1: number;
+  marketcap: number;
+  fullydiluted: number;
+  description: string;
+  image: any;
+};
+
+export async function getCoinDataById(coinId: string) {
+  try {
+    const result: any = await ky
+      .get(`https://api.coingecko.com/api/v3/coins/${coinId}`, {
+        searchParams: {
+          vs_currency: "usd",
+          price_change_percentage: "1h,24h,7d,30d",
+        },
+      })
+      .json();
+
+    // const response = (await (
+    //   await fetch(
+    //     "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&price_change_percentage=1h,24h,7d,30d",
+    //
+    //     {
+    //       next: { revalidate: 30 },
+    //     },
+    //   )
+    // ).json()) as CoinData[];
+    //
+
+    const data: CoinInfo = {
+      id: result.id,
+      symbol: result.symbol,
+      name: result.name,
+      price: result.market_data.current_price.usd,
+      hour24: result.market_data.price_change_percentage_24h_in_currency.usd,
+      day30: result.market_data.price_change_percentage_30d_in_currency.usd,
+      day60: result.market_data.price_change_percentage_60d_in_currency.usd,
+      year1: result.market_data.price_change_percentage_1y_in_currency.usd,
+      marketcap: result.market_data.market_cap.usd,
+      description: result.description.en,
+      fullydiluted: result.market_data.fully_diluted_valuation.usd,
+      image: result.image,
+    };
+    return data;
+  } catch (err) {
+    return err;
+  }
+}

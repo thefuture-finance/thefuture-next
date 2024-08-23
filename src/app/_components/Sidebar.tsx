@@ -1,4 +1,3 @@
-"use client";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 
@@ -9,10 +8,29 @@ const DynamicConnectWallet = dynamic(
   () => import("@/app/_components/ConnectWallet"),
   {
     ssr: false,
+    loading: () => (
+      <>
+        <div className="bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center hover:bg-[rgba(55,55,55)]">
+          Connect Wallet
+        </div>
+      </>
+    ),
+  },
+);
+const DynamicSelectAccountModal = dynamic(
+  () => import("@/app/_components/SelectAccountModal"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center hover:bg-[rgba(55,55,55)]">
+        Select Wallet
+      </div>
+    ),
   },
 );
 
 import { useParams, usePathname } from "next/navigation";
+import ChangeNetwork from "./ChangeNetwork";
 
 export function Sidebar() {
   const selectedPage = usePathname().replace("/", "");
@@ -27,7 +45,7 @@ export function Sidebar() {
 
           <div className="flex flex-col gap-4 mt-4 ">
             <span className="font-bold text-[20px] leading-[25px] text-[rgba(247,247,247,0.6)]">
-              Dashboard
+              Overview
             </span>
             <Link
               href="/portfolio"
@@ -65,6 +83,26 @@ export function Sidebar() {
               />
               <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[23px] leading[24px] font-light ml-2">
                 Favorites
+              </span>
+            </Link>
+
+            <Link
+              href="/address-book"
+              className={
+                "flex w-full hover:bg-[rgba(60,60,60)] rounded-lg py-1 " +
+                (selectedPage == "address-book" ? "bg-[rgba(50,50,50)]" : "")
+              }
+            >
+              <ExampleLogoIcon
+                className={
+                  "w-8 h-8 " +
+                  (selectedPage == "address-book"
+                    ? "text-[rgba(205,193,176)]"
+                    : "")
+                }
+              />
+              <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[23px] leading[24px] font-light ml-2">
+                Address Book
               </span>
             </Link>
 
@@ -152,12 +190,9 @@ export function Sidebar() {
           </div>
         </div>
         <div className="flex flex-col gap-6 items-center w-full  px-6">
-          <div className="bg-[rgba(205,193,176)] h-[43px] w-full rounded-2xl flex justify-center items-center">
-            <ScrollNameIcon />
-          </div>
-          <div className="bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center">
-            <DynamicConnectWallet />
-          </div>
+          <DynamicSelectAccountModal />
+          <ChangeNetwork />
+          <DynamicConnectWallet />
         </div>
       </div>
     </>

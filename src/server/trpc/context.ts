@@ -1,43 +1,51 @@
 import { inferAsyncReturnType } from "@trpc/server";
 import { parse } from "cookie";
+import { Prisma, PrismaClient, Account } from "@prisma/client";
+
 import jwt from "jsonwebtoken";
 
 import type { NextApiRequest, NextApiResponse } from "next";
 import type { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { NextRequest } from "next/server";
+import { cookies } from "next/headers";
+
+export type SessionType = {
+  token?: {
+    message: string;
+    address: string;
+    signedMessage: string;
+    hashedAuthValue: string;
+  };
+  account?: Account;
+};
 
 export interface ContextType {
-  // session: { user: Partial<User> };
-  req: NextApiRequest;
-  res: NextApiResponse;
+  db: PrismaClient;
+  session: SessionType; // req: NextApiRequest;
 }
 
-// function getSession(opts: H3Event<h3.EventHandlerRequest>): {
-//   // user: Partial<User>;
-// } {
-//   try {
-//     const cookie = parse(opts?.req?.headers?.cookie);
-//     const parsedToken: jwt.Jwt = jwt.verify(
-//       cookie.token,
-//       process.env.VITE_JWT_SECURITY ?? "SECRET",
-//       { complete: true },
-//     );
-//
-//     return { user: { userName: parsedToken?.payload?.username } };
-//   } catch (err) {
-//     return { user: {} };
-//   }
-// }
+const prisma = new PrismaClient();
 
-export const createContext = async (opts: any) => {
-  // const session = getSession(opts);
-  console.log(typeof opts);
-  console.log(opts);
-  return {};
+function getSession(opts: NextRequest): SessionType {
+  try {
+    const cookieStore = cookies();
+    if (cookieStore?.get("auth")?.value) {
+      const authValues = JSON.parse(cookieStore?.get("auth")?.value);
+      return { token: authValues };
+    }
+    return {};
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+export const createContext = async (opts: NextRequest) => {
+  const session = getSession(opts);
   return <ContextType>{
-    // session,
-    req: opts.req,
-    res: opts.res,
+    db: prisma,
+    session,
   };
 };
 
-export type Context = inferAsyncReturnType<typeof createContext>;
+export type Context = Awaited<ReturnType<typeof createContext>>;

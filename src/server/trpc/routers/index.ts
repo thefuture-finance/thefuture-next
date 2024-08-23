@@ -1,9 +1,12 @@
-import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
-import { exampleRouter } from "./example";
+import { router } from "../trpc";
+import { authRouter } from "./auth";
+import { favoritesRouter } from "./favorites";
+import { userInfoRouter } from "./userInfo";
 
 export const appRouter = router({
-  example: exampleRouter,
+  favoritesRouter: favoritesRouter,
+  userInfoRouter: userInfoRouter,
+  authRouter: authRouter,
 });
 
 // export type definition of API

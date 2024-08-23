@@ -194,7 +194,6 @@ export default function FavoritesTable({
 }: {
   initialData: CoinData[];
 }) {
-  console.log("rendered");
   const { data, error }: Partial<UseQueryResult<CoinData[], Error>> = useQuery({
     queryKey: ["coinData"],
     queryFn: async () => {

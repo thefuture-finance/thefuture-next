@@ -31,6 +31,8 @@ import {
   TransactionRequest,
   TransactionResponse,
 } from "ethers";
+import { useAccountInfo } from "@/store/getAccountInfo";
+import { handleTransaction } from "@/utils/smartAccount";
 
 export const useCustomAppCommunicator = (
   iframeRef: MutableRefObject<HTMLIFrameElement | null>,
@@ -44,7 +46,9 @@ export const useCustomAppCommunicator = (
 
   const { walletProvider } = useWeb3ModalProvider();
 
-  const { address, chainId } = useWeb3ModalAccount();
+  const { accountInfo } = useAccountInfo();
+
+  const { address, chainId, isConnected } = useWeb3ModalAccount();
   // const safeMessages = { data: { results: [""] } };
   // const { setTxFlow } = useContext(TxModalContext);
   // const { safe, safeAddress } = useSafeInfo();
@@ -80,11 +84,26 @@ export const useCustomAppCommunicator = (
         requestId: RequestId,
         params?: SendTransactionRequestParams,
       ) => {
-        const provider = new BrowserProvider(walletProvider);
-        const signer = await provider.getSigner();
-        const response: TransactionResponse = await signer.sendTransaction(
-          txs[0],
+        if (!accountInfo.selectedAccount.isSmart) {
+          const provider = new BrowserProvider(walletProvider);
+          const signer = await provider.getSigner();
+          const response: TransactionResponse = await signer.sendTransaction(
+            txs[0],
+          );
+
+          setCurrentRequestId(requestId);
+          return { safeTxHash: response.hash };
+        }
+
+        const response = await handleTransaction(
+          address,
+          accountInfo.selectedAccount.address,
+          walletProvider,
+          txs,
         );
+        setCurrentRequestId(requestId);
+
+        return { safeTxHash: response.hash };
 
         // const data = {
         //   app: appData,
@@ -94,13 +113,11 @@ export const useCustomAppCommunicator = (
         //   params,
         // };
 
-        setCurrentRequestId(requestId);
         // trackEvent({
         //   ...SAFE_APPS_EVENTS.OPEN_TRANSACTION_MODAL,
         //   label: appData.name,
         // });
         // setTxFlow(<SafeAppsTxFlow data={data} />, onTxFlowClose);
-        return { safeTxHash: response.hash };
       },
       onSignMessage: (
         message: string | EIP712TypedData,
@@ -154,7 +171,7 @@ export const useCustomAppCommunicator = (
       }),
       onGetSafeInfo: (event) => {
         return {
-          safeAddress: address,
+          safeAddress: accountInfo.selectedAccount.address,
           chainId,
           threshold: 1000,
           owners: [],

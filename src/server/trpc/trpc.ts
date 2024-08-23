@@ -9,44 +9,79 @@
  */
 import { TRPCError, initTRPC } from "@trpc/server";
 import { Context } from "./context";
+import { hashMessage, recoverAddress } from "ethers";
+import { sha512 } from "js-sha512";
 
 /**
  * Unprotected procedure
  **/
+// .meta<OpenApiMeta>()
 
-const t = initTRPC
-  .context<Context>()
-  // .meta<OpenApiMeta>()
-  .create({});
+const t = initTRPC.context<Context>().create({
+  errorFormatter: ({ error, shape }) => {
+    if (
+      error.code === "INTERNAL_SERVER_ERROR" &&
+      process.env.NODE_ENV === "production"
+    ) {
+      return { ...shape, message: "Internal server error" };
+    }
+    return shape;
+  },
+});
 
-// const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
-//   if (!ctx.session?.user?.userName) {
-//     throw new TRPCError({ code: "UNAUTHORIZED" });
-//   }
-//
-//   const user = await ctx.db
-//     .getRepository(User)
-//     .createQueryBuilder("user")
-//     .where("user.userName = :userName", {
-//       userName: ctx.session.user.userName,
-//     })
-//     .getOne();
-//
-//   if (!user) {
-//     throw new TRPCError({ code: "UNAUTHORIZED" });
-//   }
-//
-//   return next({
-//     ctx: {
-//       // infers the `session` as non-nullable
-//       session: { ...ctx.session, user },
-//     },
-//   });
-// });
+const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
+  if (
+    !ctx.session?.token?.address ||
+    !ctx.session?.token?.signedMessage ||
+    !ctx.session?.token?.hashedAuthValue
+  ) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const verifySignerAddress = recoverAddress(
+    hashMessage(ctx.session.token.message),
+    ctx.session.token.signedMessage,
+  );
+
+  const authValues = {
+    message: ctx.session.token.message,
+    address: ctx.session.token.address,
+    signedMessage: ctx.session.token.signedMessage,
+  };
+
+  const checkHashedAuthValues = sha512(
+    JSON.stringify(authValues) + (process.env.SECRET_KEY || "its a secret"),
+  );
+
+  if (verifySignerAddress != ctx.session.token.address) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  if (ctx.session.token.hashedAuthValue != checkHashedAuthValues) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const account = ctx.db.account.findFirst({
+    where: {
+      address: verifySignerAddress,
+    },
+  });
+
+  if (!account) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session },
+    },
+  });
+});
 
 export const publicProcedure = t.procedure;
 
-// export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 
 export const router = t.router;
 

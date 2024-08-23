@@ -1,4 +1,3 @@
-"use client";
 import { cn } from "@/lib/utils";
 import { Command as CommandPrimitive } from "cmdk";
 import { Check } from "lucide-react";
@@ -9,28 +8,33 @@ import {
   CommandGroup,
   CommandItem,
   CommandList,
-} from "./ui/command";
-import { Input } from "./ui/input";
-import { Popover, PopoverAnchor, PopoverContent } from "./ui/popover";
-import { Skeleton } from "./ui/skeleton";
+} from "../ui/command";
+import { Input } from "../ui/input";
+import { Popover, PopoverAnchor, PopoverContent } from "../ui/popover";
+import { Skeleton } from "../ui/skeleton";
+import DeleteSvg from "~/public/close.svg";
 
 type Props<T extends string> = {
   selectedValue: T;
   onSelectedValueChange: (value: T) => void;
+  onDeleteRecentSearch: (address: string) => void;
   searchValue: string;
   onSearchValueChange: (value: string) => void;
-  items: { value: T; label: string }[];
+  items: { address: T; name: string }[];
+  historyItems: { address: T; name: string }[];
   hideNotFound?: boolean;
   isLoading?: boolean;
   emptyMessage?: string;
   placeholder?: string;
 };
 
-export function AutoComplete<T extends string>({
+export default function PortfolioAutoComplete<T extends string>({
   selectedValue,
   onSelectedValueChange,
   searchValue,
   onSearchValueChange,
+  onDeleteRecentSearch,
+  historyItems,
   items,
   hideNotFound = true,
   isLoading,
@@ -43,7 +47,7 @@ export function AutoComplete<T extends string>({
     () =>
       items.reduce(
         (acc, item) => {
-          acc[item.value] = item.label;
+          acc[item.address] = item.name;
           return acc;
         },
         {} as Record<string, string>,
@@ -66,12 +70,8 @@ export function AutoComplete<T extends string>({
   };
 
   const onSelectItem = (inputValue: string) => {
-    if (inputValue === selectedValue) {
-      reset();
-    } else {
-      onSelectedValueChange(inputValue as T);
-      onSearchValueChange(labels[inputValue] ?? "");
-    }
+    onSelectedValueChange(inputValue as T);
+    onSearchValueChange("");
     setOpen(false);
   };
 
@@ -84,10 +84,16 @@ export function AutoComplete<T extends string>({
               asChild
               value={searchValue}
               onValueChange={onSearchValueChange}
-              onKeyDown={(e) => setOpen(e.key !== "Escape")}
+              onKeyDown={(e) => {
+                setOpen(e.key !== "Escape");
+                if (e.key == "Enter") {
+                  onSelectItem(searchValue);
+                }
+              }}
               onMouseDown={() => setOpen((open) => !!searchValue || !open)}
               onFocus={() => setOpen(true)}
               onBlur={onInputBlur}
+              className="w-[440px]"
             >
               <Input placeholder={placeholder} />
             </CommandPrimitive.Input>
@@ -107,33 +113,66 @@ export function AutoComplete<T extends string>({
             className={`w-[--radix-popover-trigger-width] p-0 `}
           >
             <CommandList
-              className={`${items.length > 0 || !hideNotFound ? "" : "border-[0px]"}`}
+              className={`${items?.length > 0 || !hideNotFound || searchValue?.length == 0 ? "" : "border-[0px]"}`}
             >
-              {isLoading && (
+              {isLoading && searchValue?.length && (
                 <CommandPrimitive.Loading>
                   <div className="p-1">
+                    {searchValue}
                     <Skeleton className="h-6 w-full" />
                   </div>
                 </CommandPrimitive.Loading>
               )}
-              {items.length > 0 && !isLoading ? (
+              {!searchValue?.length && historyItems?.length > 0 && (
                 <CommandGroup>
-                  {items.map((option) => (
+                  {historyItems.map((option, index) => (
+                    <div className="w-full flex gap-2 justify-between items-center">
+                      <CommandItem
+                        className="py-3"
+                        key={index}
+                        value={option?.address}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onSelect={onSelectItem}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedValue === option.address
+                              ? "opacity-100"
+                              : "opacity-0",
+                          )}
+                        />
+                        {option?.name || option?.address}
+                      </CommandItem>
+                      <div
+                        onClick={() => onDeleteRecentSearch(option.address)}
+                        className="cursor-pointer hover:bg-gray-200 w-8 h-8 text-[#333] hover:text-[rgba(120,50,50)]"
+                      >
+                        <DeleteSvg className=" w-full h-full" />
+                      </div>
+                    </div>
+                  ))}
+                </CommandGroup>
+              )}
+              {searchValue?.length > 0 && items?.length > 0 && !isLoading ? (
+                <CommandGroup>
+                  {items.map((option, index) => (
                     <CommandItem
-                      key={option.value}
-                      value={option.value}
+                      className="py-3"
+                      key={index}
+                      value={option?.address}
                       onMouseDown={(e) => e.preventDefault()}
                       onSelect={onSelectItem}
                     >
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          selectedValue === option.value
+                          selectedValue === option.address
                             ? "opacity-100"
                             : "opacity-0",
                         )}
                       />
-                      {option.label}
+                      {option?.name || option?.address}
                     </CommandItem>
                   ))}
                 </CommandGroup>
