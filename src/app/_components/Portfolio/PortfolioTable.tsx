@@ -191,7 +191,7 @@ export default function PortfolioTable({
         ) : table?.getRowModel()?.rows?.length ? (
           table.getRowModel().rows.map((row, index) => (
             <div
-              className="p-3 flex justify-between text-xl cursor-pointer hover:bg-[#272727] bg-[rgba(29,29,32)] text-white"
+              className="p-3 flex justify-between text-xl cursor-pointer hover:bg-[#272727] bg-[rgba(29,29,32)] text-white rounded-xl shadow-xl"
               key={index}
               data-state={row.getIsSelected() && "selected"}
               onClick={() => router.push(`/tokens/${data.assets[index].id}`)}

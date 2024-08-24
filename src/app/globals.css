@@ -9,10 +9,29 @@
     -o-user-drag: none;
   }
 }
+
 body {
-  background: rgba(37, 37, 37);
+  background: #0e0c12;
   height: 100vh;
   width: 100vw;
+  font-family: NeueMachina;
+}
+
+@font-face {
+  font-family: "NeueMachina";
+  src: url("/fonts/NeueMachina-Bold.otf") format("opentype");
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: "NeueMachina";
+  src: url("/fonts/NeueMachina-Medium.otf") format("opentype");
+}
+
+@font-face {
+  font-family: "NeueMachina";
+  src: url("/fonts/NeueMachina-Light.otf") format("opentype");
+  font-weight: 300;
 }
 
 * {

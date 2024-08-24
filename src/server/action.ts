@@ -114,7 +114,7 @@ export async function getPortfolioData(address: String) {
           authorization: `Basic ${process.env.ZERION_API_KEY}`,
         },
         searchParams: {
-          "filter[chain_ids]": "scroll",
+          // "filter[chain_ids]": "scroll",
           "filter[positions]": "only_simple",
           currency: "usd",
           "filter[trash]": "only_non_trash",

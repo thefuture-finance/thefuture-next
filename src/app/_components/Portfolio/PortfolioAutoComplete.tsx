@@ -77,7 +77,7 @@ export default function PortfolioAutoComplete<T extends string>({
   };
 
   return (
-    <div className="flex items-center w-full h-[30px]">
+    <div className="flex items-center justify-center w-[440px]">
       <Popover open={open} onOpenChange={setOpen}>
         <Command shouldFilter={false}>
           <PopoverAnchor asChild>
@@ -94,7 +94,7 @@ export default function PortfolioAutoComplete<T extends string>({
               onMouseDown={() => setOpen((open) => !!searchValue || !open)}
               onFocus={() => setOpen(true)}
               onBlur={onInputBlur}
-              className="w-[440px]"
+              className="text-white w-[440px] bg-[rgba(25,25,25)] p-3"
             >
               <Input placeholder={placeholder} />
             </CommandPrimitive.Input>
@@ -111,14 +111,14 @@ export default function PortfolioAutoComplete<T extends string>({
                 e.preventDefault();
               }
             }}
-            className={`w-[--radix-popover-trigger-width] p-0 `}
+            className={`w-[--radix-popover-trigger-width] p-0 bg-[rgba(25,25,25)] `}
           >
             <CommandList
               className={`${items?.length > 0 || !hideNotFound || searchValue?.length == 0 ? "" : "border-[0px]"}`}
             >
               {isLoading && searchValue?.length && (
                 <CommandPrimitive.Loading>
-                  <div className="p-1">
+                  <div className="p-1 text-[#F7F7F7]">
                     {searchValue}
                     <Skeleton className="h-6 w-full" />
                   </div>
@@ -161,7 +161,11 @@ export default function PortfolioAutoComplete<T extends string>({
                 <CommandGroup>
                   {items.map((option, index) => (
                     <CommandItem
-                      className="py-3"
+                      className={`py-3 text-[#F7F7F7] bg-[rgba(32,32,32)] ${
+                        selectedValue === option.address
+                          ? "bg-[rgba(32,32,32)]"
+                          : "bg-[rgba(25,25,25)]"
+                      }`}
                       key={index}
                       value={option?.address}
                       onMouseDown={(e) => e.preventDefault()}
@@ -169,7 +173,7 @@ export default function PortfolioAutoComplete<T extends string>({
                     >
                       <Check
                         className={cn(
-                          "mr-2 h-4 w-4",
+                          "mr-2 h-4 w-4 text-white",
                           selectedValue === option.address
                             ? "opacity-100"
                             : "opacity-0",

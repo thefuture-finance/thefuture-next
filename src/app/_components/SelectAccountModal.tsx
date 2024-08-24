@@ -27,6 +27,7 @@ import { createSmartAccount } from "@/utils/smartAccount";
 import { BrowserProvider, formatEther } from "ethers";
 import { login } from "@/utils/auth";
 import { useSpinnerStore } from "@/store/spinner";
+import { FaRegCopy } from "react-icons/fa6";
 
 export default function SelectAccountModal() {
   const { address, isConnected, chainId } = useWeb3ModalAccount();
@@ -80,49 +81,52 @@ export default function SelectAccountModal() {
     return (
       <div
         onClick={handleLogin}
-        className="cursor-pointer bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center hover:bg-[rgba(55,55,55)]"
+        className="cursor-pointer bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center hover:bg-[rgba(55,55,55)] text-[#F7F7F7]"
       >
-        To Select Wallet Login
+        Sign In
       </div>
     );
 
   return (
     <Dialog open={openSelect} onOpenChange={setOpenSelect}>
       <DialogTrigger asChild>
-        <Button className="bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center hover:bg-[rgba(55,55,55)] flex-col">
-          <div>Select Account</div>
-          {isValidEthereumAddress(accountInfo.selectedAccount.address) ||
-          true ? (
+        <Button
+          className={`bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center  flex-col] text-[16px] ${!accountInfo.selectedAccount.isSmart ? "hover:bg-[rgba(55,55,55)]" : "bg-[rgba(64,150,166)]"}`}
+        >
+          {isValidEthereumAddress(accountInfo.selectedAccount.address) &&
+          accountInfo.selectedAccount.isSmart ? (
             <div>{`${extractParts(accountInfo.selectedAccount.address, 6, 4)} | ${balance} ETH`}</div>
           ) : (
-            "unknown eth address"
+            "Use Smart Account"
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-[320px] bg-[#121313] rounded-[36px] border-0 text-white shadow-[0_0px_0px_1px_rgba(255,255,255,0.05)]">
         <DialogHeader>
           <DialogTitle>Smart Accounts</DialogTitle>
-          <DialogDescription>
-            Select Smart Account or Create New one.
-          </DialogDescription>
         </DialogHeader>
         <div className="flex items-center flex-col gap-2">
-          <div
-            onClick={() => {
-              setSelectedAccount(address, false, chainId);
-              setOpenSelect(false);
-            }}
-            key={address}
-            className="p-2 flex w-full rounded border-2 hover:bg-gray-100 cursor-pointer"
-          >
-            <div className="flex grow justify-between items-center">
-              <div className="grow">{`${extractParts(address, 6, 4)} | 25 ETH`}</div>
-              <Button type="submit" size="sm" className="px-3">
-                <span className="sr-only">Copy</span>
-                <Copy className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
+          {safeAddress?.data?.length > 0 && (
+            <Button
+              disabled={accountInfo.selectedAccount.address == address}
+              onClick={() => {
+                setSelectedAccount(address, false, chainId);
+                setOpenSelect(false);
+              }}
+              key={address}
+              className={`p-2 justify-center items-center flex w-full rounded-2xl border-2 bg-[rgba(65,65,65)] hover:bg-gray-800  ${accountInfo.selectedAccount.address == address ? "cursor-not-allowed" : "cursor-pointer"}`}
+            >
+              Switch back to EOA
+              {/* <div className="flex grow justify-between items-center"> */}
+              {/*   <div className="grow">{`${extractParts(address, 6, 4)} | 25 ETH`}</div> */}
+              {/*   <Button type="submit" size="sm" className="px-3"> */}
+              {/*     <span className="sr-only">Copy</span> */}
+              {/*     <Copy className="h-4 w-4" /> */}
+              {/*   </Button> */}
+              {/* </div> */}
+            </Button>
+          )}
+          <br />
 
           {safeAddress.isFetched &&
             safeAddress?.data?.map((data) => {
@@ -133,54 +137,45 @@ export default function SelectAccountModal() {
                     setOpenSelect(false);
                   }}
                   key={data.address}
-                  className="p-2 flex w-full rounded border-2 hover:bg-gray-100 cursor-pointer"
+                  className={`flex w-full rounded-2xl gap-1 cursor-pointer ${data.address == accountInfo.selectedAccount.address ? "" : "bg-[]"}`}
                 >
-                  <div className="flex grow justify-between items-center">
-                    <div className="grow">{`${extractParts(data.address, 6, 4)} | 25 ETH`}</div>
-                    <Button type="submit" size="sm" className="px-3">
-                      <span className="sr-only">Copy</span>
-                      <Copy className="h-4 w-4" />
-                    </Button>
+                  <div
+                    className={`p-2 flex rounded-2xl shadow-[0_0px_0px_1px_rgba(255,255,255,0.15)]  grow justify-between items-center bg-[rgba(65,65,65)] ${data.address != accountInfo?.selectedAccount?.address ? "hover:bg-[rgba(85,85,85)]" : "bg-[rgba(64,150,166)]"}`}
+                  >
+                    <div className="grow flex justify-center">{`${extractParts(data.address, 6, 4)}`}</div>
+                  </div>
+                  <div
+                    className={`py-2 rounded-2xl aspect-square justify-center shadow-[0_0px_0px_1px_rgba(255,255,255,0.15)] flex items-center h-full bg-[rgba(65,65,65)] ${data.address != accountInfo.selectedAccount.address ? "hover:bg-[rgba(85,85,85)]" : "bg-[rgba(64,150,166)]"}`}
+                  >
+                    <FaRegCopy className="h-4 w-4" />
                   </div>
                 </div>
               );
             })}
         </div>
         <DialogFooter className="sm:justify-start">
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Close
-            </Button>
-          </DialogClose>
           <Dialog>
             <DialogTrigger asChild>
-              <Button className="bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center hover:bg-[rgba(55,55,55)] flex-col">
+              <Button className="bg-[rgba(65,65,65)] h-[43px] rounded-2xl  flex w-full justify-center items-center hover:bg-[rgba(55,55,55)] flex-col">
                 <div>Create Account</div>
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-md bg-[#121313] text-white border-0">
               <DialogHeader>
                 <DialogTitle>Create Smart Account</DialogTitle>
-                <DialogDescription>
-                  Select Smart Account or Create New one.
-                </DialogDescription>
               </DialogHeader>
-              <div className="flex items-center flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <Input placeholder="type your smart account name" />
                 <Button
+                  className="bg-[rgba(65,65,65)] shadow-[0_0px_0px_1px_rgba(255,255,255,0.15)]"
                   onClick={() => {
                     onCreateSmartAccount();
                   }}
                 >
-                  Create Account
+                  Create
                 </Button>
               </div>
-              <DialogFooter className="sm:justify-start">
-                <DialogClose asChild>
-                  <Button type="button" variant="secondary">
-                    Close
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
+              <DialogFooter className="sm:justify-start"></DialogFooter>
             </DialogContent>
           </Dialog>
         </DialogFooter>

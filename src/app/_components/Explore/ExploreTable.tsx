@@ -79,14 +79,13 @@ export const columns: ColumnDef<CoinData>[] = [
     accessorKey: "price",
     header: ({ column }) => {
       return (
-        <Button
-          className="text-lg"
-          variant="ghost"
+        <div
+          className="flex items-center text-[rgba(247, 247, 247,0.8)]"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Price
           <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        </div>
       );
     },
     cell: ({ row }) => (
@@ -199,6 +198,7 @@ export const columns: ColumnDef<CoinData>[] = [
     header: ({ column }) => {
       return (
         <Button
+          className="flex justify-end"
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
@@ -208,15 +208,19 @@ export const columns: ColumnDef<CoinData>[] = [
       );
     },
     cell: ({ row }) => {
-      return <div className="font-medium">{row.getValue("marketcap")}</div>;
+      return (
+        <div className="font-medium flex justify-end">
+          ${Number(row.getValue("marketcap")).toLocaleString("en-GB")}
+        </div>
+      );
     },
   },
   {
     accessorKey: "isfavorite",
     cell: () => {
       return (
-        <div>
-          <FaRegStar className="w-8" />
+        <div className="">
+          <FaRegStar className="cursor-pointer w-8 h-8" />
           <FaStar />
         </div>
       );
@@ -269,14 +273,14 @@ export default function ExploreTable({
   });
 
   return (
-    <div className="bg-[rgba(37,37,37,0.8)] w-full flex flex-col grow border rounded border-black text-[#FFF]">
+    <div className="bg-[rgba(37,37,37,0.8)] w-full flex flex-col grow border rounded-md  text-[#FFF] bg-[rgba(25,25,25)]  border-[rgba(247,247,247,0.7)] shadow-xl">
       <div>
         <Table>
-          <TableHeader>
+          <TableHeader className="text-[rgba(247, 247, 247)]">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
                 key={headerGroup.id}
-                className="border-[rgba(20,20,20)] hover:bg-[rbga(0,0,0,0)]"
+                className="border-[rgba(247,247,247,0.7)] hover:bg-[rbga(32,32,32)]"
               >
                 {headerGroup.headers.map((header) => {
                   return (
@@ -296,21 +300,23 @@ export default function ExploreTable({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row, index) => (
-                <TableRow
-                  className="h-16 rounded-xl text-md cursor-pointer"
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                  onClick={() => router.push(`/tokens/${data[index].id}`)}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
+                <React.Fragment>
+                  <TableRow
+                    className="h-16 rounded-xl text-md cursor-pointer border-[rgba(247,247,247,0.7)]"
+                    key={row.id}
+                    data-state={row.getIsSelected() && "selected"}
+                    onClick={() => router.push(`/tokens/${data[index].id}`)}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </React.Fragment>
               ))
             ) : (
               <TableRow>

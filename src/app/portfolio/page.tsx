@@ -26,8 +26,9 @@ export default async function Portfolio({
   return (
     <>
       <div className="w-full h-full flex justify-center items-center overflow-y-scroll">
-        <div className="w-[1200px] h-full">
+        <div className="w-[1200px] h-full flex flex-col gap-6">
           <PortfolioTopBard address={searchParams.address} />
+
           <Suspense fallback={<PortfolioTableSkeleton />}>
             <PortfolioS address={searchParams.address} />
           </Suspense>

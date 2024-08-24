@@ -15,8 +15,28 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import TRPCProvider from "@/app/_trpc/TRPCProvider";
 import { useAccountInfo } from "@/store/getAccountInfo";
 import { useWeb3ModalAccount } from "@web3modal/ethers/react";
+import localFont from "next/font/local";
 
 const inter = Inter({ subsets: ["latin"] });
+const NeueMachina = localFont({
+  src: [
+    {
+      path: "../../public/fonts/NeueMachina-Light.otf",
+      weight: "300",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/NeueMachina-Medium.otf",
+      weight: "500",
+      style: "italic",
+    },
+    {
+      path: "../../public/fonts/NeueMachina-Bold.otf",
+      weight: "900",
+      style: "normal",
+    },
+  ],
+});
 
 const queryClient = new QueryClient();
 
@@ -42,7 +62,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={NeueMachina.className}>
         <TRPCProvider>
           <div
             className={`z-[90] absolute w-full h-full bg-gray-300 opacity-30 ${loading ? "block" : "hidden"}`}
@@ -59,17 +79,19 @@ export default function RootLayout({
             <AppKit>
               <div className="relative flex h-full w-full overflow-hidden">
                 <Sidebar />
-                <div className="grow mr-5 mt-5 mb-8 rounded-3xl bg-[rgba(65,65,65)] z-10 shadow-[inset_0_0px_6px_0px_rgba(23,23,23)] overflow-auto">
+                <div className="grow mr-5 mt-5 mb-8 rounded-3xl bg-[rgba(55,55,55)] z-10 shadow-[inset_0_0px_6px_0px_rgba(23,23,23)] overflow-auto">
                   {children}
                   <div className="absolute bottom-0 w-[calc(100%-280px)] flex justify-center h-8 items-center">
                     <span className="text-[#F7F7F7] text-[16px] leading-[19px] font-semibold">
                       TheFuture All Rights Reserverd 2024
                     </span>
+                    <span className="absolute right-0 mr-4 text-[#F7F7F7]">
+                      beta v0.1.0
+                    </span>
                   </div>
                 </div>
               </div>
             </AppKit>
-            <ReactQueryDevtools />
           </QueryClientProvider>
           <ToastContainer />
         </TRPCProvider>

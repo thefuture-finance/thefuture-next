@@ -11,11 +11,13 @@ import { useEffect, useState } from "react";
 import { login } from "@/utils/auth";
 import { BrowserProvider, formatEther } from "ethers";
 import { trpc } from "../_trpc/client";
+import { useAccountInfo } from "@/store/getAccountInfo";
 
 export default function ConnectButton() {
   const { open, close } = useWeb3Modal();
   const { address, chainId, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
+  const { accountInfo } = useAccountInfo();
 
   const loginMutation = trpc.authRouter.login.useMutation();
 
@@ -40,7 +42,9 @@ export default function ConnectButton() {
   }, [address, walletProvider]);
 
   return (
-    <div className="bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center hover:bg-[rgba(55,55,55)]">
+    <div
+      className={`bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center ${accountInfo.selectedAccount.isSmart ? "hover:bg-[rgba(55,55,55)]" : "bg-[rgba(64,150,166)]"} `}
+    >
       <div className="w-full text-[#F7F7F7]">
         {isConnected ? (
           <div className="w-full">

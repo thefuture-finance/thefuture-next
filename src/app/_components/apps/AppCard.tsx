@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { FaRegBookmark, FaBookmark } from "react-icons/fa6";
 
 type Networks = "scroll" | "ethereum" | "polygon";
 
@@ -36,13 +37,21 @@ export default function AppCard({
   appUrl,
   description,
 }: AppCardData) {
+  const fav = true;
   return (
-    <>
+    <div className="relative">
+      <div className="absolute top-3 right-3 p-3 hover:#CDC1B0 ">
+        {fav ? (
+          <FaRegBookmark className="cursor-pointer" color="#F7F7F7" />
+        ) : (
+          <FaBookmark className="cursor-pointer" />
+        )}
+      </div>
       <Link
         href={`/app?appUrl=${appUrl}`}
-        className="bg-gray-500 min-w-[248px] max-w-[400px] h-[228px] lg:h-[280px] rounded flex flex-col hover:bg-[rgba(97,104,118)] hover:border-[#CDC1B0] border-[rgba(0,0,0,0)] border-2"
+        className="bg-[rgba(25,25,25)] min-w-[248px] max-w-[400px] h-[228px] lg:h-[280px] rounded-xl flex flex-col hover:bg-[rgba(32,32,32)] hover:border-[#CDC1B0] border-[rgba(0,0,0,0)] border shadow-xl text-[#F7F7F7]"
       >
-        <div className="px-4 pt-6">
+        <div className="px-4 pt-6 flex gap-3 font-bold text-xl justify-start items-center">
           <Image
             alt={name}
             src={logo}
@@ -50,9 +59,9 @@ export default function AppCard({
             width={48}
             height={48}
           />
+          {name}
         </div>
         <div className="flex flex-col p-4 pb-6">
-          <span className="text-lg">{name}</span>
           <span className="text-sm">{description}</span>
           <div className="flex flex-wrap gap-2 pt-4 auto-fill-100">
             {category.map((categoryName, index) => {
@@ -68,6 +77,6 @@ export default function AppCard({
           </div>
         </div>
       </Link>
-    </>
+    </div>
   );
 }

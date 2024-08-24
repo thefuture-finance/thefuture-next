@@ -93,7 +93,7 @@ export function SelectAccountDropdownButton({
       historyItems={accountInfo.recentSearchs ?? []}
       items={searchQueryData.data ?? []}
       isLoading={searchQueryData.isLoading}
-      emptyMessage="No pokemon found."
+      emptyMessage="No Address Found."
       placeholder="Address, domain or identity"
     />
   );
