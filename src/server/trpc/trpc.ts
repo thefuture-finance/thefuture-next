@@ -17,17 +17,7 @@ import { sha512 } from "js-sha512";
  **/
 // .meta<OpenApiMeta>()
 
-const t = initTRPC.context<Context>().create({
-  errorFormatter: ({ error, shape }) => {
-    if (
-      error.code === "INTERNAL_SERVER_ERROR" &&
-      process.env.NODE_ENV === "production"
-    ) {
-      return { ...shape, message: "Internal server error" };
-    }
-    return shape;
-  },
-});
+const t = initTRPC.context<Context>().create({});
 
 const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
   if (
@@ -70,6 +60,9 @@ const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
   if (!account) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
+  ctx.session.account = { address: verifySignerAddress };
+  console.log(verifySignerAddress);
 
   return next({
     ctx: {

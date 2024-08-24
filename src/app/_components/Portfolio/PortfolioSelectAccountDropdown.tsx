@@ -46,17 +46,23 @@ export function SelectAccountDropdownButton({
   }
 
   function setSelectedValue(address: string) {
-    if (!isValidEthereumAddress(address)) {
-      notify("this is not a valid etherum address", {
-        messageType: ToastMessageType.Warning,
-      });
-      return;
-    }
-    if (address == selectedAddress) {
-      notify("this address is already selected", {
-        messageType: ToastMessageType.Warning,
-      });
-      return;
+    if (
+      !searchQueryData?.data?.find((value) => {
+        return value?.address == address;
+      })
+    ) {
+      if (!isValidEthereumAddress(address)) {
+        notify("this is not a valid etherum address", {
+          messageType: ToastMessageType.Warning,
+        });
+        return;
+      }
+      if (address == selectedAddress) {
+        notify("this address is already selected", {
+          messageType: ToastMessageType.Warning,
+        });
+        return;
+      }
     }
 
     if (

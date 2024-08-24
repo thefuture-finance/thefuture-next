@@ -34,6 +34,12 @@ export const authRouter = router({
         sameSite: "strict",
       });
 
+      await ctx.db.account.create({
+        data: {
+          address: input.address,
+        },
+      });
+
       return;
     }),
 });

@@ -28,13 +28,17 @@ export default function RootLayout({
   let [color, setColor] = useState("#ffffff");
   const loading = useSpinnerStore((state) => state.isSpinnerActive);
   const { accountInfo, setSelectedAccount } = useAccountInfo();
-  const { address } = useWeb3ModalAccount();
+  const { address, chainId } = useWeb3ModalAccount();
   useEffect(() => {
     if (!accountInfo.selectedAccount.isSmart) {
-      setSelectedAccount(address, accountInfo.selectedAccount.isSmart);
+      setSelectedAccount(address, accountInfo.selectedAccount.isSmart, chainId);
     }
-    console.log(accountInfo.selectedAccount.address);
-  }, [address]);
+  }, [
+    address,
+    accountInfo.selectedAccount.isSmart,
+    setSelectedAccount,
+    chainId,
+  ]);
 
   return (
     <html lang="en">
@@ -55,7 +59,7 @@ export default function RootLayout({
             <AppKit>
               <div className="relative flex h-full w-full overflow-hidden">
                 <Sidebar />
-                <div className="grow mr-5 mt-5 mb-8 rounded-3xl bg-[rgba(65,65,65)] z-10 shadow-[inset_0_0px_20px_20px_rgba(0,0,0,0.6)] overflow-auto">
+                <div className="grow mr-5 mt-5 mb-8 rounded-3xl bg-[rgba(65,65,65)] z-10 shadow-[inset_0_0px_6px_0px_rgba(23,23,23)] overflow-auto">
                   {children}
                   <div className="absolute bottom-0 w-[calc(100%-280px)] flex justify-center h-8 items-center">
                     <span className="text-[#F7F7F7] text-[16px] leading-[19px] font-semibold">

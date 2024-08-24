@@ -6,10 +6,10 @@ import {
   useWeb3ModalAccount,
   useWeb3ModalProvider,
 } from "@web3modal/ethers/react";
-import { extractParts } from "@/utils/formatters";
-import { useEffect } from "react";
+import { extractParts, roundNumber } from "@/utils/formatters";
+import { useEffect, useState } from "react";
 import { login } from "@/utils/auth";
-import { BrowserProvider } from "ethers";
+import { BrowserProvider, formatEther } from "ethers";
 import { trpc } from "../_trpc/client";
 
 export default function ConnectButton() {
@@ -26,13 +26,26 @@ export default function ConnectButton() {
     // await login("asd", signer, loginMutation);
   }
 
+  const [balance, setBalance] = useState("");
+
+  useEffect(() => {
+    async function getBalance() {
+      if (isConnected) {
+        const provider = new BrowserProvider(walletProvider);
+        const balance = await provider?.getBalance(address);
+        setBalance(() => roundNumber(Number(formatEther(balance)), 2));
+      }
+    }
+    getBalance();
+  }, [address, walletProvider]);
+
   return (
     <div className="bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center hover:bg-[rgba(55,55,55)]">
       <div className="w-full text-[#F7F7F7]">
         {isConnected ? (
           <div className="w-full">
             <button className="w-full" onClick={() => handleLogin()}>
-              {`${extractParts(address, 6, 4)} | 25 ETH`}
+              {`${extractParts(address, 6, 4)} | ${balance} ETH`}
             </button>
           </div>
         ) : (

@@ -21,10 +21,10 @@ export type SessionType = {
 
 export interface ContextType {
   db: PrismaClient;
-  session: SessionType; // req: NextApiRequest;
+  session?: SessionType; // req: NextApiRequest;
 }
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 function getSession(opts: NextRequest): SessionType {
   try {
@@ -40,7 +40,7 @@ function getSession(opts: NextRequest): SessionType {
   }
 }
 
-export const createContext = async (opts: NextRequest) => {
+export const createContext = async (opts) => {
   const session = getSession(opts);
   return <ContextType>{
     db: prisma,

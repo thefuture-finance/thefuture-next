@@ -1,5 +1,4 @@
 "use client";
-import ExampleTRPC from "@/app/_components/ExampleTRPC";
 import { serverClient } from "./_trpc/serverClient";
 import { getCoinDataById } from "@/server/action";
 import { notify, ToastMessageType } from "@/utils/notification";
@@ -36,6 +35,12 @@ export default function Home() {
   //
   const loginMutation = trpc.authRouter.login.useMutation();
 
+  const addAccountMutation = trpc.userInfoRouter.addAccount.useMutation();
+
+  async function add() {
+    console.log(addAccountMutation.mutate({ address: "asd" }));
+  }
+
   async function login(
     message: string,
     signer: JsonRpcSigner,
@@ -52,5 +57,9 @@ export default function Home() {
     return value;
   }
 
-  return <></>;
+  return (
+    <>
+      <button onClick={() => add()}>click</button>
+    </>
+  );
 }

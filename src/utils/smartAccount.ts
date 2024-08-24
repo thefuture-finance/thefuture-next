@@ -13,6 +13,7 @@ import { BaseTransaction } from "@safe-global/safe-apps-sdk";
 export async function createSmartAccount(
   address: string,
   walletProvider: Eip1193Provider,
+  callbackFn?: (txHash: string) => void,
 ) {
   const safeFactory = await SafeFactory.init({
     provider: walletProvider,
@@ -25,6 +26,7 @@ export async function createSmartAccount(
 
   const protocolKit = await safeFactory.deploySafe({
     safeAccountConfig,
+    callback: callbackFn,
   });
   const safeAddress = await protocolKit.getAddress();
   return safeAddress;
@@ -47,7 +49,9 @@ export async function handleTransaction(
 
   const txResponse = await protocolKit.executeTransaction(safeTransaction);
 
-  const receipt = await txResponse.transactionResponse?.wait();
+  const tranactionResponse: any = txResponse?.transactionResponse;
+
+  const receipt = await tranactionResponse?.wait();
 
   return receipt;
 }

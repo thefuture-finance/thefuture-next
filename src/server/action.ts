@@ -6,6 +6,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 export type CoinData = {
   id: String;
   assetName: String;
+  image: string;
   price: number;
   hour1: number;
   hour24: number;
@@ -17,7 +18,7 @@ export type CoinData = {
 
 export async function getCoinData() {
   try {
-    const result: CoinData[] = await ky
+    const result: any[] = await ky
       .get("https://api.coingecko.com/api/v3/coins/markets", {
         searchParams: {
           vs_currency: "usd",
@@ -41,6 +42,7 @@ export async function getCoinData() {
       return {
         id: data.id,
         assetName: data.name,
+        image: data.image,
         price: data.current_price,
         hour1: data.price_change_percentage_1h_in_currency,
         hour24: data.price_change_percentage_24h_in_currency,

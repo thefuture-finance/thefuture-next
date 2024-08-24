@@ -41,6 +41,24 @@ import Image from "next/image";
 
 export const columns: ColumnDef<PortfolioAssetData>[] = [
   {
+    accessorKey: "image",
+    header: () => {
+      return null;
+    },
+    cell: ({ row }) => {
+      return (
+        <div className="h-full aspect-square flex justify-center items-center mr-[-16px]">
+          <Image
+            width={32}
+            height={32}
+            alt="scroll"
+            src={row.getValue("image")}
+          />
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "name",
     header: ({ column }) => {
       return (
@@ -124,8 +142,6 @@ export default function PortfolioTable({
   initialData: PortfolioData | null;
   address: String;
 }) {
-  const setSpinner = useSpinnerStore((state) => state.setSpinner);
-
   const { data, isFetching }: Partial<UseQueryResult<PortfolioData, Error>> =
     useQuery({
       queryKey: ["portfolioData", address],

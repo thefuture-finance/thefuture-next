@@ -7,6 +7,13 @@ const handler = async (req: Request) =>
     endpoint: "/api/trpc",
     req,
     router: appRouter,
+    onError(opts) {
+      const { error, type, path, input, ctx, req } = opts;
+      // console.error("Error:", error);
+      if (error.code === "INTERNAL_SERVER_ERROR") {
+        // send to bug reporting
+      }
+    },
     createContext,
   });
 

@@ -13,6 +13,7 @@ import { Input } from "../ui/input";
 import { Popover, PopoverAnchor, PopoverContent } from "../ui/popover";
 import { Skeleton } from "../ui/skeleton";
 import DeleteSvg from "~/public/close.svg";
+import { SearchedAddress } from "@/store/getAccountInfo";
 
 type Props<T extends string> = {
   selectedValue: T;
@@ -21,7 +22,7 @@ type Props<T extends string> = {
   searchValue: string;
   onSearchValueChange: (value: string) => void;
   items: { address: T; name: string }[];
-  historyItems: { address: T; name: string }[];
+  historyItems: SearchedAddress[];
   hideNotFound?: boolean;
   isLoading?: boolean;
   emptyMessage?: string;
@@ -126,10 +127,12 @@ export default function PortfolioAutoComplete<T extends string>({
               {!searchValue?.length && historyItems?.length > 0 && (
                 <CommandGroup>
                   {historyItems.map((option, index) => (
-                    <div className="w-full flex gap-2 justify-between items-center">
+                    <div
+                      key={index}
+                      className="w-full flex gap-2 justify-between items-center"
+                    >
                       <CommandItem
                         className="py-3"
-                        key={index}
                         value={option?.address}
                         onMouseDown={(e) => e.preventDefault()}
                         onSelect={onSelectItem}

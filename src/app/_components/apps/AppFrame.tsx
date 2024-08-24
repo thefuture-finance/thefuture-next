@@ -21,6 +21,7 @@ import {
 import SafeAppIframe from "./SafeAppFrame";
 import { useCustomAppCommunicator } from "@/hooks/useCustomAppCommunicator";
 import { useWeb3ModalAccount } from "@web3modal/ethers/react";
+import { useAccountInfo } from "@/store/getAccountInfo";
 
 const UNKNOWN_APP_NAME = "Unknown Safe App";
 
@@ -36,6 +37,7 @@ const AppFrame = ({
   // safeAppFromManifest,
 }: AppFrameProps): ReactElement => {
   const { address, chainId, isConnected } = useWeb3ModalAccount();
+  const { accountInfo } = useAccountInfo();
   // const { safe, safeLoaded } = useSafeInfo();
   // const addressBook = useAddressBook();
   const router = useRouter();
@@ -88,7 +90,12 @@ const AppFrame = ({
 
   useEffect(() => {
     iframeRef.current.src += "";
-  }, [address, iframeRef]);
+  }, [
+    address,
+    iframeRef,
+    accountInfo.selectedAccount.address,
+    accountInfo.selectedAccount.chainId,
+  ]);
 
   const onRejectPermissionRequest = (requestId?: RequestId) => {
     if (requestId) {

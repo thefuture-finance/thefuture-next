@@ -49,6 +49,10 @@ export const useCustomAppCommunicator = (
   const { accountInfo } = useAccountInfo();
 
   const { address, chainId, isConnected } = useWeb3ModalAccount();
+  // accountInfo.smartAccounts.find(
+  //   (account) =>
+  //     account.address == accountInfo.selectedAccount.address,
+  // ).ownerAddress
   // const safeMessages = { data: { results: [""] } };
   // const { setTxFlow } = useContext(TxModalContext);
   // const { safe, safeAddress } = useSafeInfo();
@@ -170,9 +174,10 @@ export const useCustomAppCommunicator = (
         origin: document.location.origin,
       }),
       onGetSafeInfo: (event) => {
+        console.log(accountInfo.selectedAccount);
         return {
           safeAddress: accountInfo.selectedAccount.address,
-          chainId,
+          chainId: accountInfo.selectedAccount.chainId,
           threshold: 1000,
           owners: [],
           isReadOnly: false,

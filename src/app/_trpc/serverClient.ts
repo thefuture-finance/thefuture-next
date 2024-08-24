@@ -1,11 +1,4 @@
-import { httpBatchLink } from "@trpc/client";
-
+import { prisma } from "@/server/trpc/context";
 import { appRouter } from "@/server/trpc/routers";
 
-export const serverClient = appRouter.createCaller({
-  links: [
-    httpBatchLink({
-      url: "http://localhost:3000/api/trpc",
-    }),
-  ],
-});
+export const serverClient = appRouter.createCaller({ db: prisma });

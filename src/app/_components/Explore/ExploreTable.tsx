@@ -36,8 +36,27 @@ import { useRouter } from "next/navigation";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { CoinData, getCoinData } from "@/server/action";
 import { roundNumber, roundPrice } from "@/utils/formatters";
+import { FaRegStar, FaStar } from "react-icons/fa6";
+import Image from "next/image";
 
 export const columns: ColumnDef<CoinData>[] = [
+  {
+    accessorKey: "image",
+    cell: ({ row }) => (
+      <div className="h-full aspect-square flex justify-center items-center mr-[-16px]">
+        <Image
+          width={32}
+          height={32}
+          alt="scroll"
+          src={row.getValue("image")}
+        />
+      </div>
+    ),
+    header: () => {
+      return null;
+    },
+  },
+
   {
     accessorKey: "assetName",
     header: ({ column }) => {
@@ -61,6 +80,7 @@ export const columns: ColumnDef<CoinData>[] = [
     header: ({ column }) => {
       return (
         <Button
+          className="text-lg"
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
@@ -193,6 +213,17 @@ export const columns: ColumnDef<CoinData>[] = [
   },
   {
     accessorKey: "isfavorite",
+    cell: () => {
+      return (
+        <div>
+          <FaRegStar className="w-8" />
+          <FaStar />
+        </div>
+      );
+    },
+    header: () => {
+      return null;
+    },
   },
 ];
 
@@ -238,37 +269,9 @@ export default function ExploreTable({
   });
 
   return (
-    <div className="w-full flex flex-col grow">
-      <div className="flex items-center py-4 ">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-      <div className="border-x border-x-[rgba(50,50,50)]">
-        <Table className="border-spacing-y-4 border-separate">
+    <div className="bg-[rgba(37,37,37,0.8)] w-full flex flex-col grow border rounded border-black text-[#FFF]">
+      <div>
+        <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow
@@ -294,7 +297,7 @@ export default function ExploreTable({
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row, index) => (
                 <TableRow
-                  className="bg-[#353535] h-20 rounded-lg text-xl cursor-pointer"
+                  className="h-16 rounded-xl text-md cursor-pointer"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   onClick={() => router.push(`/tokens/${data[index].id}`)}

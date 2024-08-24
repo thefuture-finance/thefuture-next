@@ -14,60 +14,73 @@ export type SmartAccountInfo = {
 export type SelectedAccountInfo = {
   address: string;
   isSmart: boolean;
+  chainId: string;
 };
 
 export type GetAccountInfo = {
   accountInfo: {
-    recentSearchs: SearchedAddress[];
+    isLogged: boolean;
+    recentSearches: SearchedAddress[];
     smartAccounts: SmartAccountInfo[];
     selectedAccount: SelectedAccountInfo;
-    mainAccountAddress: String;
+    mainAccountAddress: string;
   };
-  setSelectedAccount: (address: string, isSmart: boolean) => void;
+  setIsLogged: (isLogged: boolean) => void;
+  setSelectedAccount: (
+    address: string,
+    isSmart: boolean,
+    chainId: string,
+  ) => void;
   addRecentSearch: (newSearch: SearchedAddress) => void;
-  setRecentSearch: (search: SearchedAddress[]) => void;
+  setRecentSearches: (searches: SearchedAddress[]) => void;
   removeRecentSearch: (address: string) => void;
 };
 
 export const useAccountInfo = create<GetAccountInfo>((set) => ({
   accountInfo: {
-    recentSearchs: [],
+    isLogged: false,
+    recentSearches: [],
     smartAccounts: [],
     selectedAccount: {
       address: "",
       isSmart: false,
+      chainId: "",
     },
     mainAccountAddress: "",
   },
-  setSelectedAccount: (address: string, isSmart: boolean) => {
+  setIsLogged: (isLogged: boolean) => {
     set((state) => ({
-      ...state,
       accountInfo: {
         ...state.accountInfo,
-        selectedAccount: { address, isSmart },
+        isLogged,
+      },
+    }));
+  },
+  setSelectedAccount: (address: string, isSmart: boolean, chainId: string) => {
+    set((state) => ({
+      accountInfo: {
+        ...state.accountInfo,
+        selectedAccount: { address, isSmart, chainId },
       },
     }));
   },
   addRecentSearch: (newSearch: SearchedAddress) => {
     set((state) => ({
-      ...state,
       accountInfo: {
         ...state.accountInfo,
-        recentSearchs: [...state.accountInfo.recentSearchs, newSearch],
+        recentSearches: [...state.accountInfo.recentSearches, newSearch],
       },
     }));
   },
-  setRecentSearch: (searchs: SearchedAddress[]) =>
+  setRecentSearches: (searches: SearchedAddress[]) =>
     set((state) => ({
-      ...state,
-      accountInfo: { ...state.accountInfo, recentSearchs: searchs },
+      accountInfo: { ...state.accountInfo, recentSearches: searches },
     })),
   removeRecentSearch: (address: string) =>
     set((state) => ({
-      ...state,
       accountInfo: {
         ...state.accountInfo,
-        recentSearchs: state.accountInfo.recentSearchs.filter(
+        recentSearches: state.accountInfo.recentSearches.filter(
           (search) => search.address !== address,
         ),
       },
