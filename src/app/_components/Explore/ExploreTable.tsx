@@ -45,12 +45,14 @@ import { roundNumber, roundPrice } from "@/utils/formatters";
 import { FaRegStar, FaStar } from "react-icons/fa6";
 import Image from "next/image";
 import { trpc } from "@/app/_trpc/client";
+import { getQueryKey } from "@trpc/react-query";
+import { useWeb3ModalAccount } from "@web3modal/ethers/react";
+import { serverClient } from "@/app/_trpc/serverClient";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
     setFavorite: (isFavorite: boolean, id: string) => void;
     getFavorite: () => string[];
-    invalidateData: () => void;
   }
 }
 
@@ -237,12 +239,10 @@ export const columns: ColumnDef<CoinData>[] = [
       const handleRemove = (event) => {
         event.stopPropagation();
         table.options.meta?.setFavorite(false, row.getValue("assetName"));
-        table.options.meta?.invalidateData();
       };
       const handleAdd = (event) => {
         event.stopPropagation();
         table.options.meta?.setFavorite(true, row.getValue("assetName"));
-        table.options.meta?.invalidateData();
       };
       const getFavorites = () => {
         return table?.options?.meta?.getFavorite() || [];
@@ -287,10 +287,61 @@ export default function ExploreTable({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
-  const addFavoriteMutation = trpc.favoritesRouter.addFavorite.useMutation();
-  const removeFavoriteMutation =
-    trpc.favoritesRouter.removeFavorite.useMutation();
+  const { address } = useWeb3ModalAccount();
+  const utils = trpc.useUtils();
   const favorites = trpc.favoritesRouter.listFavorites.useQuery();
+  type favoriteType = Awaited<
+    ReturnType<(typeof serverClient)["favoritesRouter"]["listFavorites"]>
+  >;
+
+  const addFavoriteMutation = trpc.favoritesRouter.addFavorite.useMutation({
+    onMutate: async (newFav: { id: string }) => {
+      await utils.favoritesRouter.listFavorites.cancel();
+      const previousFav = utils.favoritesRouter.listFavorites.getData();
+      utils.favoritesRouter.listFavorites.setData(
+        undefined,
+        (old: favoriteType) => {
+          return [...old, { accountId: address, favoriteId: newFav.id }];
+        },
+      );
+
+      return { previousFav };
+    },
+    onError: (err, newFav, context) => {
+      utils.favoritesRouter.listFavorites.setData(
+        undefined,
+        context.previousFav,
+      );
+    },
+    onSettled: () => {
+      utils.favoritesRouter.listFavorites.invalidate();
+    },
+  });
+  const removeFavoriteMutation =
+    trpc.favoritesRouter.removeFavorite.useMutation({
+      onMutate: async (newFav: { id: string }) => {
+        await utils.favoritesRouter.listFavorites.cancel();
+        const previousFav = utils.favoritesRouter.listFavorites.getData();
+        utils.favoritesRouter.listFavorites.setData(
+          undefined,
+          (old: favoriteType) => {
+            return old.filter((fav) => {
+              return fav.favoriteId != newFav.id;
+            });
+          },
+        );
+        return { previousFav };
+      },
+      onError: (err, newFav, context) => {
+        utils.favoritesRouter.listFavorites.setData(
+          undefined,
+          context.previousFav,
+        );
+      },
+      onSettled: () => {
+        utils.favoritesRouter.listFavorites.invalidate();
+      },
+    });
 
   const table = useReactTable({
     data,
@@ -309,15 +360,14 @@ export default function ExploreTable({
       rowSelection,
     },
     meta: {
-      invalidateData: () => {
-        favorites.refetch();
-      },
       setFavorite: (isFavorite: boolean, id: string) => {
         if (isFavorite) {
-          addFavoriteMutation.mutate({ id });
+          const data = addFavoriteMutation.mutate({ id });
+          console.log(data);
           return;
         }
-        removeFavoriteMutation.mutate({ id });
+        const data = removeFavoriteMutation.mutate({ id });
+        console.log(data);
       },
       getFavorite: () => {
         return favorites.data?.map((favorite) => {
@@ -332,12 +382,12 @@ export default function ExploreTable({
       <div>
         <Table>
           <TableHeader className="text-[rgba(247, 247, 247)]">
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups()?.map((headerGroup) => (
               <TableRow
                 key={headerGroup.id}
                 className="border-[rgba(247,247,247,0.7)] hover:bg-[rbga(32,32,32)]"
               >
-                {headerGroup.headers.map((header) => {
+                {headerGroup.headers?.map((header) => {
                   return (
                     <TableHead key={header.id}>
                       {header.isPlaceholder
@@ -354,21 +404,23 @@ export default function ExploreTable({
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row, index) => (
+              table.getRowModel()?.rows?.map((row, index) => (
                 <TableRow
                   className="relative h-16 rounded-xl text-md cursor-pointer border-[rgba(247,247,247,0.7)]"
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   onClick={() => router.push(`/tokens/${data[index].id}`)}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </TableCell>
-                  ))}
+                  {row
+                    .getVisibleCells()
+                    ?.map((cell) => (
+                      <TableCell key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
+                      </TableCell>
+                    ))}
                 </TableRow>
               ))
             ) : (

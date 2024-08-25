@@ -32,10 +32,32 @@ import { FaRegCopy } from "react-icons/fa6";
 export default function SelectAccountModal() {
   const { address, isConnected, chainId } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
-  const { accountInfo, setIsLogged, setSelectedAccount } = useAccountInfo();
+  const utils = trpc.useUtils();
+  const { accountInfo, setSmartAccounts, setIsLogged, setSelectedAccount } =
+    useAccountInfo();
   const { setSpinner } = useSpinnerStore();
   const safeAddress = trpc.userInfoRouter.getAccounts.useQuery({ id: address });
-  const addAccountMutation = trpc.userInfoRouter.addAccount.useMutation();
+  const addAccountMutation = trpc.userInfoRouter.addAccount
+    .useMutation
+    // {  onMutate: async (newFav) => {
+    //     await utils.userInfoRouter.getAccounts.cancel();
+    //     const previousSmartAccounts = utils.userInfoRouter.getAccounts.getData();
+    //     utils.userInfoRouter.getAccounts.setData(undefined, (old: any) => {
+    //       return [...old, newFav];
+    //     });
+    //
+    //     return { previousSmartAccounts };
+    //   },
+    //   onError: (err, newFav, context) => {
+    //     utils.userInfoRouter.getAccounts.setData(
+    //       undefined,
+    //       context.previousSmartAccounts,
+    //     );
+    //   },
+    //   onSettled: () => {
+    //     utils.favoritesRouter.listFavorites.invalidate();
+    //   },}
+    ();
   const [balance, setBalance] = useState("");
   const [openSelect, setOpenSelect] = useState(false);
 

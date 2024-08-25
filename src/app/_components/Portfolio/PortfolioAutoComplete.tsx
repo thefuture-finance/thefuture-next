@@ -87,7 +87,8 @@ export default function PortfolioAutoComplete<T extends string>({
               onValueChange={onSearchValueChange}
               onKeyDown={(e) => {
                 setOpen(e.key !== "Escape");
-                if (e.key == "Enter") {
+                console.log(searchValue);
+                if (e.key == "Enter" && !items?.length) {
                   onSelectItem(searchValue);
                 }
               }}
@@ -132,7 +133,11 @@ export default function PortfolioAutoComplete<T extends string>({
                       className="w-full flex gap-2 justify-between items-center"
                     >
                       <CommandItem
-                        className="py-3"
+                        className={`flex py-3 text-[#F7F7F7] bg-[rgba(32,32,32)] ${
+                          selectedValue === option.address
+                            ? "bg-[rgba(32,32,32)]"
+                            : "bg-[rgba(25,25,25)]"
+                        }`}
                         value={option?.address}
                         onMouseDown={(e) => e.preventDefault()}
                         onSelect={onSelectItem}
@@ -149,7 +154,7 @@ export default function PortfolioAutoComplete<T extends string>({
                       </CommandItem>
                       <div
                         onClick={() => onDeleteRecentSearch(option.address)}
-                        className="cursor-pointer hover:bg-gray-200 w-8 h-8 text-[#333] hover:text-[rgba(120,50,50)]"
+                        className="shrink-0 cursor-pointer hover:bg-gray-200 w-8 h-8 text-[#333] hover:text-[rgba(120,50,50)]"
                       >
                         <DeleteSvg className=" w-full h-full" />
                       </div>

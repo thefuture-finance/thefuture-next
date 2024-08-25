@@ -34,6 +34,7 @@ export type GetAccountInfo = {
   addRecentSearch: (newSearch: SearchedAddress) => void;
   setRecentSearches: (searches: SearchedAddress[]) => void;
   removeRecentSearch: (address: string) => void;
+  setSmartAccounts: (smartAccounts: SmartAccountInfo[]) => void;
 };
 
 export const useAccountInfo = create<GetAccountInfo>((set) => ({
@@ -85,4 +86,12 @@ export const useAccountInfo = create<GetAccountInfo>((set) => ({
         ),
       },
     })),
+  setSmartAccounts: (smartAccounts: SmartAccountInfo[]) => {
+    set((state) => ({
+      accountInfo: {
+        ...state.accountInfo,
+        smartAccounts,
+      },
+    }));
+  },
 }));

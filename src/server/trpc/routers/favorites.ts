@@ -22,9 +22,10 @@ export const favoritesRouter = router({
     .mutation(async ({ ctx, input }) => {
       await ctx.db.favorites.delete({
         where: {
-          favoriteId_accountId: input.id + ctx.session?.account?.address,
-          favoriteId: input.id,
-          accountId: ctx.session?.account?.address,
+          favoriteId_accountId: {
+            favoriteId: input.id,
+            accountId: ctx.session?.account?.address,
+          },
         },
       });
     }),

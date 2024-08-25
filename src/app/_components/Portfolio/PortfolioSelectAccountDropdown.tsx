@@ -47,7 +47,7 @@ export function SelectAccountDropdownButton({
 
   function setSelectedValue(address: string) {
     if (
-      !searchQueryData?.data?.find((value) => {
+      !addressBook?.some((value) => {
         return value?.address == address;
       })
     ) {
