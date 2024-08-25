@@ -50,7 +50,7 @@ export default function SelectAccountModal() {
       }
     }
     getBalance();
-  }, [accountInfo.selectedAccount.address, walletProvider]);
+  }, [accountInfo.selectedAccount.address, walletProvider, isConnected]);
 
   async function onCreateSmartAccount() {
     const safeAddress = await createSmartAccount(address, walletProvider);

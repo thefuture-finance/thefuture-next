@@ -4,7 +4,9 @@ import * as React from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
+  RowData,
   SortingState,
+  TableMeta,
   VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -33,25 +35,40 @@ import {
   TableRow,
 } from "@/app/_components/ui/table";
 import { useRouter } from "next/navigation";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import {
+  useQuery,
+  useQueryClient,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import { CoinData, getCoinData } from "@/server/action";
 import { roundNumber, roundPrice } from "@/utils/formatters";
 import { FaRegStar, FaStar } from "react-icons/fa6";
 import Image from "next/image";
+import { trpc } from "@/app/_trpc/client";
+
+declare module "@tanstack/react-table" {
+  interface TableMeta<TData extends RowData> {
+    setFavorite: (isFavorite: boolean, id: string) => void;
+    getFavorite: () => string[];
+    invalidateData: () => void;
+  }
+}
 
 export const columns: ColumnDef<CoinData>[] = [
   {
     accessorKey: "image",
-    cell: ({ row }) => (
-      <div className="h-full aspect-square flex justify-center items-center mr-[-16px]">
-        <Image
-          width={32}
-          height={32}
-          alt="scroll"
-          src={row.getValue("image")}
-        />
-      </div>
-    ),
+    cell: ({ row, table }) => {
+      return (
+        <div className="h-full aspect-square flex justify-center items-center mr-[-16px]">
+          <Image
+            width={32}
+            height={32}
+            alt="scroll"
+            src={row.getValue("image")}
+          />
+        </div>
+      );
+    },
     header: () => {
       return null;
     },
@@ -61,13 +78,13 @@ export const columns: ColumnDef<CoinData>[] = [
     accessorKey: "assetName",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
+        <div
+          className="flex items-center text-[rgba(247, 247, 247,0.8)] cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Assets
           <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        </div>
       );
     },
     cell: ({ row }) => {
@@ -80,7 +97,7 @@ export const columns: ColumnDef<CoinData>[] = [
     header: ({ column }) => {
       return (
         <div
-          className="flex items-center text-[rgba(247, 247, 247,0.8)]"
+          className="flex items-center text-[rgba(247, 247, 247,0.8)] cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Price
@@ -96,13 +113,13 @@ export const columns: ColumnDef<CoinData>[] = [
     accessorKey: "hour1",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
+        <div
+          className="flex items-center text-[rgba(247, 247, 247,0.8)] cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           1 Hour
           <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        </div>
       );
     },
     cell: ({ row }) => {
@@ -119,13 +136,13 @@ export const columns: ColumnDef<CoinData>[] = [
     accessorKey: "hour24",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
+        <div
+          className="flex items-center text-[rgba(247, 247, 247,0.8)] cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           24 Hour
           <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        </div>
       );
     },
     cell: ({ row }) => {
@@ -145,13 +162,13 @@ export const columns: ColumnDef<CoinData>[] = [
     accessorKey: "day7",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
+        <div
+          className="flex items-center text-[rgba(247, 247, 247,0.8)] cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           7 Days
           <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        </div>
       );
     },
     cell: ({ row }) => {
@@ -171,13 +188,13 @@ export const columns: ColumnDef<CoinData>[] = [
     accessorKey: "day30",
     header: ({ column }) => {
       return (
-        <Button
-          variant="ghost"
+        <div
+          className="flex items-center text-[rgba(247, 247, 247,0.8)] cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           30 Days
           <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        </div>
       );
     },
     cell: ({ row }) => {
@@ -197,14 +214,13 @@ export const columns: ColumnDef<CoinData>[] = [
     accessorKey: "marketcap",
     header: ({ column }) => {
       return (
-        <Button
-          className="flex justify-end"
-          variant="ghost"
+        <div
+          className="flex items-center text-[rgba(247, 247, 247,0.8)] cursor-pointer"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Market Cap
           <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
+        </div>
       );
     },
     cell: ({ row }) => {
@@ -217,11 +233,28 @@ export const columns: ColumnDef<CoinData>[] = [
   },
   {
     accessorKey: "isfavorite",
-    cell: () => {
+    cell: ({ row, table }) => {
+      const handleRemove = (event) => {
+        event.stopPropagation();
+        table.options.meta?.setFavorite(false, row.getValue("assetName"));
+        table.options.meta?.invalidateData();
+      };
+      const handleAdd = (event) => {
+        event.stopPropagation();
+        table.options.meta?.setFavorite(true, row.getValue("assetName"));
+        table.options.meta?.invalidateData();
+      };
+      const getFavorites = () => {
+        return table?.options?.meta?.getFavorite() || [];
+      };
+
       return (
-        <div className="">
-          <FaRegStar className="cursor-pointer w-8 h-8" />
-          <FaStar />
+        <div className="z-20">
+          {getFavorites().includes(row.getValue("assetName")) ? (
+            <FaStar className="cursor-pointer w-8 h-8" onClick={handleRemove} />
+          ) : (
+            <FaRegStar className="cursor-pointer w-8 h-8" onClick={handleAdd} />
+          )}
         </div>
       );
     },
@@ -245,6 +278,7 @@ export default function ExploreTable({
     refetchInterval: 3000,
   });
 
+  const queryClient = useQueryClient();
   const router = useRouter();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -253,6 +287,10 @@ export default function ExploreTable({
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
+  const addFavoriteMutation = trpc.favoritesRouter.addFavorite.useMutation();
+  const removeFavoriteMutation =
+    trpc.favoritesRouter.removeFavorite.useMutation();
+  const favorites = trpc.favoritesRouter.listFavorites.useQuery();
 
   const table = useReactTable({
     data,
@@ -269,6 +307,23 @@ export default function ExploreTable({
       columnFilters,
       columnVisibility,
       rowSelection,
+    },
+    meta: {
+      invalidateData: () => {
+        favorites.refetch();
+      },
+      setFavorite: (isFavorite: boolean, id: string) => {
+        if (isFavorite) {
+          addFavoriteMutation.mutate({ id });
+          return;
+        }
+        removeFavoriteMutation.mutate({ id });
+      },
+      getFavorite: () => {
+        return favorites.data?.map((favorite) => {
+          return favorite.favoriteId;
+        });
+      },
     },
   });
 
@@ -300,23 +355,21 @@ export default function ExploreTable({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row, index) => (
-                <React.Fragment>
-                  <TableRow
-                    className="h-16 rounded-xl text-md cursor-pointer border-[rgba(247,247,247,0.7)]"
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    onClick={() => router.push(`/tokens/${data[index].id}`)}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                </React.Fragment>
+                <TableRow
+                  className="relative h-16 rounded-xl text-md cursor-pointer border-[rgba(247,247,247,0.7)]"
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  onClick={() => router.push(`/tokens/${data[index].id}`)}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
               ))
             ) : (
               <TableRow>

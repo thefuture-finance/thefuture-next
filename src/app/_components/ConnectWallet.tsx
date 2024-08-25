@@ -17,15 +17,15 @@ export default function ConnectButton() {
   const { open, close } = useWeb3Modal();
   const { address, chainId, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
-  const { accountInfo } = useAccountInfo();
-
+  const { accountInfo, setIsLogged } = useAccountInfo();
   const loginMutation = trpc.authRouter.login.useMutation();
 
-  async function handleLogin() {
-    await open({ view: "Account" });
-    // const provider = new BrowserProvider(walletProvider);
-    // const signer = await provider.getSigner();
-    // await login("asd", signer, loginMutation);
+  async function handleConnect() {
+    setIsLogged(false);
+    await open({ view: "Connect" });
+    const provider = new BrowserProvider(walletProvider);
+    const signer = await provider.getSigner();
+    await login("asd", signer, loginMutation);
   }
 
   const [balance, setBalance] = useState("");
@@ -39,7 +39,7 @@ export default function ConnectButton() {
       }
     }
     getBalance();
-  }, [address, walletProvider]);
+  }, [address, walletProvider, isConnected]);
 
   return (
     <div
@@ -48,16 +48,16 @@ export default function ConnectButton() {
       <div className="w-full text-[#F7F7F7]">
         {isConnected ? (
           <div className="w-full">
-            <button className="w-full" onClick={() => handleLogin()}>
+            <button
+              className="w-full"
+              onClick={() => open({ view: "Account" })}
+            >
               {`${extractParts(address, 6, 4)} | ${balance} ETH`}
             </button>
           </div>
         ) : (
           <div className="w-full">
-            <button
-              className="w-full"
-              onClick={() => open({ view: "Connect" })}
-            >
+            <button className="w-full" onClick={() => handleConnect()}>
               Connect Wallet
             </button>
           </div>

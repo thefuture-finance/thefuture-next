@@ -23,9 +23,11 @@ model SmartAccount {
 }
 
 model Favorites {
-  favoriteId String  @unique
+  favoriteId String   
   account    Account @relation(fields: [accountId], references: [address])
   accountId  String
+
+  @@unique([favoriteId,accountId])
 }
 
 datasource db {

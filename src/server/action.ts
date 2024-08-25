@@ -141,7 +141,7 @@ export async function getPortfolioData(address: String) {
     let totalAmount = 0;
 
     const portfolioAssetsData = result.data.map((token) => {
-      totalAmount = Number(token.attributes.price);
+      totalAmount += Number(token.attributes.value);
       const attr = token.attributes;
       let id = filteredCoins.find((coin) => {
         return coin.name == attr?.fungible_info?.name;

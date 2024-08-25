@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa6";
+import { usePinnedApps } from "@/store/usePinnedApps";
 
 type Networks = "scroll" | "ethereum" | "polygon";
 
@@ -27,6 +28,7 @@ export type AppCardData = {
   logo: string;
   name: string;
 };
+
 export default function AppCard({
   networks,
   category,
@@ -38,13 +40,26 @@ export default function AppCard({
   description,
 }: AppCardData) {
   const fav = true;
+  const { pinnedApps, addPinnedApps, removePinnedApps } = usePinnedApps();
+
+  function setPinned() {
+    if (pinnedApps.includes(appUrl)) {
+      removePinnedApps(appUrl);
+      return;
+    }
+    addPinnedApps(appUrl);
+  }
+
   return (
     <div className="relative">
-      <div className="absolute top-3 right-3 p-3 hover:#CDC1B0 ">
-        {fav ? (
-          <FaRegBookmark className="cursor-pointer" color="#F7F7F7" />
+      <div
+        className="absolute top-3 right-3 p-3 hover:#CDC1B0"
+        onClick={() => setPinned()}
+      >
+        {pinnedApps.includes(appUrl) ? (
+          <FaBookmark className="cursor-pointer" color="#F7F7F7" />
         ) : (
-          <FaBookmark className="cursor-pointer" />
+          <FaRegBookmark className="cursor-pointer" color="#F7F7F7" />
         )}
       </div>
       <Link

@@ -41,6 +41,8 @@ const DynamicSelectAccountModal = dynamic(
 
 import { useParams, usePathname } from "next/navigation";
 import ChangeNetwork from "./ChangeNetwork";
+import PinnedAppsSidebar from "./PinnedAppsSidebar";
+import { Suspense } from "react";
 
 export function Sidebar() {
   const selectedPage = usePathname().replace("/", "");
@@ -159,6 +161,9 @@ export function Sidebar() {
                 Swap
               </span>
             </Link>
+            <Suspense>
+              <PinnedAppsSidebar />
+            </Suspense>
           </div>
         </div>
         <div className="flex flex-col gap-3 items-center w-full  px-6">

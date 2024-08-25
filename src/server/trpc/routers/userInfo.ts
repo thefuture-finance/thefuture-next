@@ -32,11 +32,12 @@ export const userInfoRouter = router({
     .input(
       z.object({
         address: z.string(),
-        chainId: z.number(),
+        chainId: z.string(),
         name: z.string().optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      console.log(input);
       await ctx.db.smartAccount.create({
         data: {
           address: input.address,

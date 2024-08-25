@@ -92,6 +92,7 @@ export default function RootLayout({
                 </div>
               </div>
             </AppKit>
+            <ReactQueryDevtools />
           </QueryClientProvider>
           <ToastContainer />
         </TRPCProvider>

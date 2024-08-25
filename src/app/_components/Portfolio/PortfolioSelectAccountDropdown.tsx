@@ -66,7 +66,7 @@ export function SelectAccountDropdownButton({
     }
 
     if (
-      !accountInfo?.recentSearchs?.find((value) => {
+      !accountInfo?.recentSearches?.find((value) => {
         return value?.address == address;
       })
     ) {
@@ -90,7 +90,7 @@ export function SelectAccountDropdownButton({
       searchValue={searchValue}
       onSearchValueChange={setSearchValue}
       onDeleteRecentSearch={deleteRecentSearch}
-      historyItems={accountInfo.recentSearchs ?? []}
+      historyItems={accountInfo.recentSearches ?? []}
       items={searchQueryData.data ?? []}
       isLoading={searchQueryData.isLoading}
       emptyMessage="No Address Found."

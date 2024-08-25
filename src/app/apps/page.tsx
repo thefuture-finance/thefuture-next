@@ -1,3 +1,4 @@
+"use client";
 import AppGrid, { AppGridProps } from "@/app/_components/apps/AppGrid";
 
 export default function Apps() {
@@ -12,7 +13,7 @@ export default function Apps() {
           "https://discord.com/invite/CvKUrqM",
         ],
         is_favorites: false,
-        appUrl: "https://app.aave.com&marketName=proto_scroll_sepolia_v3",
+        appUrl: "https://app.aave.com",
         logo: "/assets/images/aaveLogo.png",
         name: "Aave v3",
         description: "Non-custodial liquidity protocol",
@@ -22,7 +23,7 @@ export default function Apps() {
         category: ["Defi", "Staking"],
         socials: [],
         is_favorites: true,
-        appUrl: "https://app.uniswap.org/",
+        appUrl: "https://app.uniswap.org",
         logo: "/assets/images/lidoLogo.png",
         name: "Lido Staking",
         description: "Lido is the liquid staking solution for Ethereum.",
@@ -32,7 +33,7 @@ export default function Apps() {
         category: ["Bridge"],
         socials: [],
         is_favorites: true,
-        appUrl: "https://www.asteriafinance.com/tr/scroll-sepolia",
+        appUrl: "https://www.asteriafinance.com",
         logo: "/assets/images/scrollLogo.png",
         name: "Scroll Bridge",
         description: "Scroll Bridge is the native Bridge in Scroll",
