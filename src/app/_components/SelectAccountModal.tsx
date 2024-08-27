@@ -1,6 +1,6 @@
 "use client";
-import { Copy } from "lucide-react";
-
+import dayjs from "dayjs";
+import { Copy, Loader2 } from "lucide-react";
 import { Button } from "@/app/_components/ui/button";
 import {
   Dialog,
@@ -28,6 +28,7 @@ import { BrowserProvider, formatEther } from "ethers";
 import { login } from "@/utils/auth";
 import { useSpinnerStore } from "@/store/spinner";
 import { FaRegCopy } from "react-icons/fa6";
+import { serverClient } from "../_trpc/serverClient";
 
 export default function SelectAccountModal() {
   const { address, isConnected, chainId } = useWeb3ModalAccount();
@@ -35,31 +36,48 @@ export default function SelectAccountModal() {
   const utils = trpc.useUtils();
   const { accountInfo, setSmartAccounts, setIsLogged, setSelectedAccount } =
     useAccountInfo();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const favorites = trpc.favoritesRouter.listFavorites.useQuery();
   const { setSpinner } = useSpinnerStore();
+  type accountType = Awaited<
+    ReturnType<(typeof serverClient)["userInfoRouter"]["getAccounts"]>
+  >;
+
   const safeAddress = trpc.userInfoRouter.getAccounts.useQuery({ id: address });
-  const addAccountMutation = trpc.userInfoRouter.addAccount
-    .useMutation
-    // {  onMutate: async (newFav) => {
-    //     await utils.userInfoRouter.getAccounts.cancel();
-    //     const previousSmartAccounts = utils.userInfoRouter.getAccounts.getData();
-    //     utils.userInfoRouter.getAccounts.setData(undefined, (old: any) => {
-    //       return [...old, newFav];
-    //     });
-    //
-    //     return { previousSmartAccounts };
-    //   },
-    //   onError: (err, newFav, context) => {
-    //     utils.userInfoRouter.getAccounts.setData(
-    //       undefined,
-    //       context.previousSmartAccounts,
-    //     );
-    //   },
-    //   onSettled: () => {
-    //     utils.favoritesRouter.listFavorites.invalidate();
-    //   },}
-    ();
+
+  const addAccountMutation = trpc.userInfoRouter.addAccount.useMutation({
+    onMutate: async (newFav: accountType[number]) => {
+      await utils.userInfoRouter.getAccounts.cancel();
+      const previousSmartAccounts = utils.userInfoRouter.getAccounts.getData({
+        id: address,
+      });
+      utils.userInfoRouter.getAccounts.setData(
+        { id: address },
+        (old: accountType) => {
+          return [...(old ?? []), newFav];
+        },
+      );
+
+      return { previousSmartAccounts };
+    },
+    onError: (err, newFav, context) => {
+      console.log(err);
+      console.log("errr");
+      console.log(context.previousSmartAccounts);
+      utils.userInfoRouter.getAccounts.setData(
+        { id: address },
+        context.previousSmartAccounts || [],
+      );
+    },
+    onSettled: () => {
+      console.log("done");
+      utils.favoritesRouter.listFavorites.invalidate();
+    },
+  });
   const [balance, setBalance] = useState("");
   const [openSelect, setOpenSelect] = useState(false);
+  const [openCreate, setOpenCreate] = useState(false);
 
   useEffect(() => {
     async function getBalance() {
@@ -75,11 +93,18 @@ export default function SelectAccountModal() {
   }, [accountInfo.selectedAccount.address, walletProvider, isConnected]);
 
   async function onCreateSmartAccount() {
-    const safeAddress = await createSmartAccount(address, walletProvider);
-    addAccountMutation.mutate({
-      address: safeAddress,
-      chainId: chainId.toString(),
-    });
+    try {
+      setIsLoading(true);
+      const safeAddress = await createSmartAccount(address, walletProvider);
+      setOpenCreate(false);
+      addAccountMutation.mutate({
+        address: safeAddress,
+        chainId: chainId.toString(),
+      });
+      setIsLoading(false);
+    } catch {
+      setIsLoading(false);
+    }
   }
 
   const loginMutation = trpc.authRouter.login.useMutation();
@@ -89,7 +114,7 @@ export default function SelectAccountModal() {
       setSpinner(true);
       const provider = new BrowserProvider(walletProvider);
       const signer = await provider.getSigner();
-      await login("asd", signer, loginMutation);
+      await login(dayjs().add(7, "day").format(), signer, loginMutation);
       setIsLogged(true);
       setSpinner(false);
     } catch (err) {
@@ -116,7 +141,7 @@ export default function SelectAccountModal() {
           className={`bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center  flex-col] text-[16px] ${!accountInfo.selectedAccount.isSmart ? "hover:bg-[rgba(55,55,55)]" : "bg-[rgba(64,150,166)]"}`}
         >
           {isValidEthereumAddress(accountInfo.selectedAccount.address) &&
-          accountInfo.selectedAccount.isSmart ? (
+          !!accountInfo?.selectedAccount?.isSmart ? (
             <div>{`${extractParts(accountInfo.selectedAccount.address, 6, 4)} | ${balance} ETH`}</div>
           ) : (
             "Use Smart Account"
@@ -128,7 +153,7 @@ export default function SelectAccountModal() {
           <DialogTitle>Smart Accounts</DialogTitle>
         </DialogHeader>
         <div className="flex items-center flex-col gap-2">
-          {safeAddress?.data?.length > 0 && (
+          {!!safeAddress?.data?.length && (
             <Button
               disabled={accountInfo.selectedAccount.address == address}
               onClick={() => {
@@ -150,7 +175,7 @@ export default function SelectAccountModal() {
           )}
           <br />
 
-          {safeAddress.isFetched &&
+          {safeAddress?.isFetched &&
             safeAddress?.data?.map((data) => {
               return (
                 <div
@@ -159,26 +184,36 @@ export default function SelectAccountModal() {
                     setOpenSelect(false);
                   }}
                   key={data.address}
-                  className={`flex w-full rounded-2xl gap-1 cursor-pointer ${data.address == accountInfo.selectedAccount.address ? "" : "bg-[]"}`}
+                  className={`flex w-full rounded-2xl gap-1 cursor-pointer ${data.address == accountInfo.selectedAccount.address ? "" : ""}`}
                 >
                   <div
-                    className={`p-2 flex rounded-2xl shadow-[0_0px_0px_1px_rgba(255,255,255,0.15)]  grow justify-between items-center bg-[rgba(65,65,65)] ${data.address != accountInfo?.selectedAccount?.address ? "hover:bg-[rgba(85,85,85)]" : "bg-[rgba(64,150,166)]"}`}
+                    className={`p-2 flex rounded-2xl shadow-[0_0px_0px_1px_rgba(255,255,255,0.15)]  grow justify-between items-center  ${data.address != accountInfo?.selectedAccount?.address ? "hover:bg-[rgba(85,85,85)] bg-[rgba(65,65,65)]" : "bg-[rgba(64,150,166)]"}`}
                   >
                     <div className="grow flex justify-center">{`${extractParts(data.address, 6, 4)}`}</div>
                   </div>
                   <div
-                    className={`py-2 rounded-2xl aspect-square justify-center shadow-[0_0px_0px_1px_rgba(255,255,255,0.15)] flex items-center h-full bg-[rgba(65,65,65)] ${data.address != accountInfo.selectedAccount.address ? "hover:bg-[rgba(85,85,85)]" : "bg-[rgba(64,150,166)]"}`}
+                    className={`py-2 rounded-2xl aspect-square justify-center shadow-[0_0px_0px_1px_rgba(255,255,255,0.15)] flex items-center h-full bg-[rgba(65,65,65)] hover:bg-[rgba(85,85,85)]`}
                   >
-                    <FaRegCopy className="h-4 w-4" />
+                    <FaRegCopy
+                      className="h-4 w-4"
+                      onClick={async () =>
+                        navigator.clipboard.writeText(data.address)
+                      }
+                    />
                   </div>
                 </div>
               );
             })}
         </div>
         <DialogFooter className="sm:justify-start">
-          <Dialog>
+          <Dialog open={openCreate} onOpenChange={setOpenCreate}>
             <DialogTrigger asChild>
-              <Button className="bg-[rgba(65,65,65)] h-[43px] rounded-2xl  flex w-full justify-center items-center hover:bg-[rgba(55,55,55)] flex-col">
+              <Button
+                onClick={() => {
+                  setOpenCreate(true);
+                }}
+                className="bg-[rgba(65,65,65)] h-[43px] rounded-2xl  flex w-full justify-center items-center hover:bg-[rgba(55,55,55)] flex-col"
+              >
                 <div>Create Account</div>
               </Button>
             </DialogTrigger>
@@ -186,16 +221,25 @@ export default function SelectAccountModal() {
               <DialogHeader>
                 <DialogTitle>Create Smart Account</DialogTitle>
               </DialogHeader>
-              <div className="flex items-center gap-2">
+              <div className="text-black flex items-center gap-2">
                 <Input placeholder="type your smart account name" />
-                <Button
-                  className="bg-[rgba(65,65,65)] shadow-[0_0px_0px_1px_rgba(255,255,255,0.15)]"
-                  onClick={() => {
-                    onCreateSmartAccount();
-                  }}
-                >
-                  Create
-                </Button>
+                {!isLoading ? (
+                  <Button
+                    className="w-24 bg-[rgba(65,65,65)] shadow-[0_0px_0px_1px_rgba(255,255,255,0.15)] cursor-pointer hover:bg-[rgba(45,45,45)]"
+                    onClick={() => {
+                      onCreateSmartAccount();
+                    }}
+                  >
+                    Create
+                  </Button>
+                ) : (
+                  <Button
+                    disabled
+                    className="w-24 bg-[rgba(65,65,65)] shadow-[0_0px_0px_1px_rgba(255,255,255,0.15)] cursor-pointer hover:bg-[rgba(45,45,45)]"
+                  >
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  </Button>
+                )}
               </div>
               <DialogFooter className="sm:justify-start"></DialogFooter>
             </DialogContent>

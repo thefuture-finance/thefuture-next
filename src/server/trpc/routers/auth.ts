@@ -13,7 +13,6 @@ export const authRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      console.log("login");
       const cookieStore = cookies();
 
       const hashedAuthValue = sha512(
@@ -34,11 +33,17 @@ export const authRouter = router({
         sameSite: "strict",
       });
 
-      await ctx.db.account.create({
-        data: {
-          address: input.address,
-        },
-      });
+      if (
+        !(await ctx.db.account.findUnique({
+          where: { address: input.address },
+        }))
+      ) {
+        await ctx.db.account.create({
+          data: {
+            address: input.address,
+          },
+        });
+      }
 
       return;
     }),

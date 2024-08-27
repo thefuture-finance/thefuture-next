@@ -195,7 +195,7 @@ export default function PortfolioTable({
                 <Skeleton className="w-full h-16" />
               </div>
             </div>
-          ) : table?.getRowModel()?.rows?.length ? (
+          ) : !!table?.getRowModel()?.rows?.length ? (
             table.getRowModel().rows.map((row, index) => (
               <div
                 className="p-3 flex justify-between text-xl cursor-pointer hover:bg-[#272727] bg-[rgba(29,29,32)] text-white rounded-xl shadow-xl"

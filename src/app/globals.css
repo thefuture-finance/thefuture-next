@@ -95,6 +95,10 @@ body {
   }
 }
 
+.small-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
 @layer base {
   * {
     @apply border-border;

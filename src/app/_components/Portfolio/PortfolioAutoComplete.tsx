@@ -115,9 +115,9 @@ export default function PortfolioAutoComplete<T extends string>({
             className={`w-[--radix-popover-trigger-width] p-0 bg-[rgba(25,25,25)] `}
           >
             <CommandList
-              className={`${items?.length > 0 || !hideNotFound || searchValue?.length == 0 ? "" : "border-[0px]"}`}
+              className={`${!!items?.length || !hideNotFound || !searchValue?.length ? "" : "border-[0px]"}`}
             >
-              {isLoading && searchValue?.length && (
+              {isLoading && !!searchValue?.length && (
                 <CommandPrimitive.Loading>
                   <div className="p-1 text-[#F7F7F7]">
                     {searchValue}
@@ -125,7 +125,7 @@ export default function PortfolioAutoComplete<T extends string>({
                   </div>
                 </CommandPrimitive.Loading>
               )}
-              {!searchValue?.length && historyItems?.length > 0 && (
+              {!searchValue?.length && !!historyItems?.length && (
                 <CommandGroup>
                   {historyItems.map((option, index) => (
                     <div
@@ -162,7 +162,7 @@ export default function PortfolioAutoComplete<T extends string>({
                   ))}
                 </CommandGroup>
               )}
-              {searchValue?.length > 0 && items?.length > 0 && !isLoading ? (
+              {!!searchValue?.length && !!items?.length && !isLoading ? (
                 <CommandGroup>
                   {items.map((option, index) => (
                     <CommandItem

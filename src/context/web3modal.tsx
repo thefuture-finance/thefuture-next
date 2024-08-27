@@ -70,7 +70,7 @@ const ethersConfig = defaultConfig({
 // 5. Create a AppKit instance
 createWeb3Modal({
   ethersConfig,
-  chains: [mainnet, scroll, sepolia, scroll_sepolia],
+  chains: [scroll_sepolia],
   projectId,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
 });

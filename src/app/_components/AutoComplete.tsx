@@ -116,7 +116,7 @@ export function AutoComplete<T extends string>({
                   </div>
                 </CommandPrimitive.Loading>
               )}
-              {items.length > 0 && !isLoading ? (
+              {!!items.length && !isLoading ? (
                 <CommandGroup>
                   {items.map((option) => (
                     <CommandItem

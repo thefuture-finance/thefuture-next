@@ -50,7 +50,7 @@ export function Sidebar() {
   return (
     <>
       <div className="bg-red w-[280px] shrink-0 h-full py-6 flex flex-col items-center drag-none select-none">
-        <div className="flex flex-col grow">
+        <div className="flex flex-col grow overflow-y-auto small-scrollbar">
           <Link href="/" className="flex w-full rounded-lg py-1">
             <TheFutureIcon />
           </Link>
@@ -166,7 +166,7 @@ export function Sidebar() {
             </Suspense>
           </div>
         </div>
-        <div className="flex flex-col gap-3 items-center w-full  px-6">
+        <div className="flex flex-col gap-3 items-center w-full px-6 pt-3">
           <DynamicSelectAccountModal />
           <ChangeNetwork />
           <DynamicConnectWallet />

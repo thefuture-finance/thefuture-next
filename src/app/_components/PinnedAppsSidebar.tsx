@@ -5,52 +5,19 @@ import Link from "next/link";
 import Image from "next/image";
 import { AppCardData } from "./apps/AppCard";
 import { useSearchParams } from "next/navigation";
+import { trpc } from "../_trpc/client";
 
 export default function PinnedAppsSidebar() {
   const searchParams = useSearchParams();
-  const apps: AppCardData[] = [
-    {
-      networks: ["scroll"],
-      category: ["Defi", "Lending/Borrowing"],
-      socials: [
-        "https://x.com/aaveaave",
-        "https://github.com/aave",
-        "https://discord.com/invite/CvKUrqM",
-      ],
-      is_favorites: false,
-      appUrl: "https://app.aave.com",
-      logo: "/assets/images/aaveLogo.png",
-      name: "Aave v3",
-      description: "Non-custodial liquidity protocol",
-    },
-    {
-      networks: ["scroll"],
-      category: ["Defi", "Staking"],
-      socials: [],
-      is_favorites: true,
-      appUrl: "https://app.uniswap.org",
-      logo: "/assets/images/lidoLogo.png",
-      name: "Lido Staking",
-      description: "Lido is the liquid staking solution for Ethereum.",
-    },
-    {
-      networks: ["scroll", "ethereum"],
-      category: ["Bridge"],
-      socials: [],
-      is_favorites: true,
-      appUrl: "https://www.asteriafinance.com",
-      logo: "/assets/images/scrollLogo.png",
-      name: "Scroll Bridge",
-      description: "Scroll Bridge is the native Bridge in Scroll",
-    },
-  ];
+
+  const apps = trpc.appsRouter.getApps.useQuery<AppCardData[]>();
 
   const { pinnedApps } = usePinnedApps();
 
   return (
     <>
-      {apps
-        .filter((app) => pinnedApps.includes(app.appUrl))
+      {apps.data
+        ?.filter((app) => pinnedApps.includes(app.appUrl))
         .map((app) => (
           <Link
             key={app.name}

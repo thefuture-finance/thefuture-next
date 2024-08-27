@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, publicProcedure, router } from "../trpc";
 import { isAddress } from "ethers";
+import { TRPCError } from "@trpc/server";
 
 export const userInfoRouter = router({
   getUserRecentlySearch: protectedProcedure.query(async () => {
@@ -37,7 +38,9 @@ export const userInfoRouter = router({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      console.log("sss");
       console.log(input);
+
       await ctx.db.smartAccount.create({
         data: {
           address: input.address,
@@ -52,6 +55,10 @@ export const userInfoRouter = router({
   getAccounts: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
+      if (input.id != ctx.session.account.address) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
       const account = await ctx.db.account.findUnique({
         where: {
           address: input.id,
@@ -59,18 +66,17 @@ export const userInfoRouter = router({
         include: { accounts: true },
       });
 
-      return account.accounts.map((account) => {
-        return {
-          address: account.address,
-          chainId: account.chainId,
-          name: "",
-        };
-      });
+      console.log(account);
 
-      return [
-        { address: "0xe3E05A1bDfdA3785e363071384B973a86d704ae7", name: "asd" },
+      const accounts =
+        account.accounts.map((account) => {
+          return {
+            address: account.address,
+            chainId: account.chainId,
+            name: "",
+          };
+        }) || [];
 
-        { address: "0xd6241489026aD9043097E1EdEBBc6A34f7d95fc4", name: "asd" },
-      ];
+      return accounts;
     }),
 });

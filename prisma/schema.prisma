@@ -9,7 +9,7 @@ generator client {
 }
 
 model Account {
-  address   String         @id
+  address   String         @id @unique
   accounts  SmartAccount[]
   favorites Favorites[]
 }

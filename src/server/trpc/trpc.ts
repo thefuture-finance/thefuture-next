@@ -62,7 +62,6 @@ const enforceUserIsAuthed = t.middleware(async ({ ctx, next }) => {
   }
 
   ctx.session.account = { address: verifySignerAddress };
-  console.log(verifySignerAddress);
 
   return next({
     ctx: {

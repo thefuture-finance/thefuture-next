@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { FaRegBookmark, FaBookmark } from "react-icons/fa6";
