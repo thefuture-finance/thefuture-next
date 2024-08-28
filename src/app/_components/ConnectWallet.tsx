@@ -5,6 +5,7 @@ import {
   useWeb3Modal,
   useWeb3ModalAccount,
   useWeb3ModalProvider,
+  useWeb3ModalState,
 } from "@web3modal/ethers/react";
 import { extractParts, roundNumber } from "@/utils/formatters";
 import { useEffect, useState } from "react";
@@ -12,21 +13,38 @@ import { login } from "@/utils/auth";
 import { BrowserProvider, formatEther } from "ethers";
 import { trpc } from "../_trpc/client";
 import { useAccountInfo } from "@/store/getAccountInfo";
+import dayjs from "dayjs";
+import { useSpinnerStore } from "@/store/spinner";
 
 export default function ConnectButton() {
   const { open, close } = useWeb3Modal();
   const { address, chainId, isConnected } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
   const { accountInfo, setIsLogged } = useAccountInfo();
+  const { setSpinner } = useSpinnerStore();
   const loginMutation = trpc.authRouter.login.useMutation();
 
   async function handleConnect() {
     setIsLogged(false);
     await open({ view: "Connect" });
-    const provider = new BrowserProvider(walletProvider);
-    const signer = await provider.getSigner();
-    await login("asd", signer, loginMutation);
   }
+
+  useEffect(() => {
+    (async () => {
+      if (isConnected) {
+        try {
+          setSpinner(true);
+          const provider = new BrowserProvider(walletProvider);
+          const signer = await provider.getSigner();
+          await login(dayjs().add(7, "day").format(), signer, loginMutation);
+          setIsLogged(true);
+        } catch (err) {
+          console.log(err);
+        }
+        setSpinner(false);
+      }
+    })();
+  }, [isConnected]);
 
   const [balance, setBalance] = useState("");
 
@@ -38,7 +56,9 @@ export default function ConnectButton() {
         setBalance(() => roundNumber(Number(formatEther(balance)), 2));
       }
     }
-    getBalance();
+    try {
+      getBalance();
+    } catch (err) {}
   }, [address, walletProvider, isConnected]);
 
   return (

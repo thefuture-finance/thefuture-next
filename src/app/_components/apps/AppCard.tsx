@@ -23,7 +23,7 @@ export type AppCardData = {
   networks: Networks[];
   category: Category[];
   socials: Socials[];
-  is_favorites: boolean;
+  isAutoConnect: boolean;
   appUrl: string;
   description: string;
   logo: string;
@@ -34,7 +34,7 @@ export default function AppCard({
   networks,
   category,
   socials,
-  is_favorites,
+  isAutoConnect,
   logo,
   name,
   appUrl,

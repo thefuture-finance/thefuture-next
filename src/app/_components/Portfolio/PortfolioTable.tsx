@@ -38,6 +38,7 @@ import PortfolioTableSkeleton from "./PortfolioTableSkeleton";
 import { Skeleton } from "../ui/skeleton";
 
 import Image from "next/image";
+import { zeroFormatterHtml } from "@/app/_utils/htmlFormatters";
 
 export const columns: ColumnDef<PortfolioAssetData>[] = [
   {
@@ -216,7 +217,11 @@ export default function PortfolioTable({
                   </span>
                   <div className="flex gap-3">
                     <span className="border border-[rgba(63,63,63)] bg-[rgba(40,40,45)] rounded-lg text-[16px] leading-[24px] py-1 px-2 font-semibold">
-                      ${roundPrice(row.getValue("value")) || "--"}
+                      $
+                      {zeroFormatterHtml(
+                        roundPrice(row.getValue("value")),
+                        4,
+                      ) ?? "--"}
                     </span>
                     <div className="flex items-center gap-2">
                       <span className="leading-[24px] text-[16px] font-semibold">
@@ -243,7 +248,11 @@ export default function PortfolioTable({
                         PRICE USD
                       </span>
                       <span className="leading-[21px] text-[14px]">
-                        ${roundPrice(row.getValue("price"))}
+                        $
+                        {zeroFormatterHtml(
+                          roundPrice(row.getValue("price")),
+                          4,
+                        )}
                       </span>
                     </div>
                     <div className="flex flex-col gap-2 basis-1/4">
@@ -253,8 +262,9 @@ export default function PortfolioTable({
                       <span
                         className={`leading-[21px] text-[14px] ${row.getValue<number>("percent_1d") < 0 ? "text-red-300" : ""}`}
                       >
-                        {roundNumber(row.getValue("percent_1d"), 2) ||
-                          "--" + "%"}
+                        {Math.abs(
+                          Number(roundNumber(row.getValue("percent_1d"), 2)),
+                        ) || "--" + "%"}
                       </span>
                     </div>
                     <div className="flex flex-col gap-2 basis-1/4">
@@ -264,8 +274,9 @@ export default function PortfolioTable({
                       <span
                         className={`leading-[21px] text-[14px] ${row.getValue<number>("percent_1d") < 0 ? "text-red-300" : ""}`}
                       >
-                        {roundNumber(row.getValue("percent_1d"), 2) ||
-                          "--" + "%"}
+                        {Math.abs(
+                          Number(roundNumber(row.getValue("percent_1d"), 2)),
+                        ) || "--" + "%"}
                       </span>
                     </div>
                   </div>

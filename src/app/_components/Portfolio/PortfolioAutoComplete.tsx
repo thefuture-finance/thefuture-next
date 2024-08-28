@@ -77,7 +77,7 @@ export default function PortfolioAutoComplete<T extends string>({
   };
 
   return (
-    <div className="flex items-center justify-center w-[440px]">
+    <div className="flex w-[470px] items-center justify-center">
       <Popover open={open} onOpenChange={setOpen}>
         <Command shouldFilter={false}>
           <PopoverAnchor asChild>
@@ -95,7 +95,7 @@ export default function PortfolioAutoComplete<T extends string>({
               onMouseDown={() => setOpen((open) => !!searchValue || !open)}
               onFocus={() => setOpen(true)}
               onBlur={onInputBlur}
-              className="text-white w-[440px] bg-[rgba(25,25,25)] p-3"
+              className="text-white w-full bg-[rgba(25,25,25)] p-3"
             >
               <Input placeholder={placeholder} />
             </CommandPrimitive.Input>
@@ -130,10 +130,10 @@ export default function PortfolioAutoComplete<T extends string>({
                   {historyItems.map((option, index) => (
                     <div
                       key={index}
-                      className="w-full flex gap-2 justify-between items-center"
+                      className="w-full flex gap-2 justify-between items-center pr-2"
                     >
                       <CommandItem
-                        className={`flex py-3 text-[#F7F7F7] bg-[rgba(32,32,32)] ${
+                        className={`flex py-3 text-[#F7F7F7] bg-[rgba(32,32,32)] grow ${
                           selectedValue === option.address
                             ? "bg-[rgba(32,32,32)]"
                             : "bg-[rgba(25,25,25)]"
@@ -154,7 +154,7 @@ export default function PortfolioAutoComplete<T extends string>({
                       </CommandItem>
                       <div
                         onClick={() => onDeleteRecentSearch(option.address)}
-                        className="shrink-0 cursor-pointer hover:bg-gray-200 w-8 h-8 text-[#333] hover:text-[rgba(120,50,50)]"
+                        className="shrink-0 cursor-pointer hover:bg-gray-200 w-8 h-8 text-[#333] hover:text-[rgba(120,50,50)] rounded"
                       >
                         <DeleteSvg className=" w-full h-full" />
                       </div>

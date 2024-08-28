@@ -81,7 +81,7 @@ export default function SelectAccountModal() {
 
   useEffect(() => {
     async function getBalance() {
-      if (isConnected) {
+      if (isConnected && accountInfo.selectedAccount.address) {
         const provider = new BrowserProvider(walletProvider);
         const balance = await provider?.getBalance(
           accountInfo.selectedAccount.address,

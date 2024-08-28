@@ -20,7 +20,7 @@ export function extractParts(
   return `${firstPart}...${lastPart}`;
 }
 
-export function countZeroFractionDigits(num: number) {
+export function countZeroFractionDigits(num: number | string) {
   const fractionalPart = BigNumber(num).toFixed().split(".")[1];
   if (!fractionalPart) return 0; // Return 0 if there's no fractional part
   let stop = false;
@@ -92,4 +92,20 @@ export function nFormatter(num: number | string, digits: number) {
   return item
     ? (num / item.value).toFixed(digits).replace(regexp, "").concat(item.symbol)
     : "0";
+}
+
+export function zeroFormatter(
+  num: number | string,
+  threshold: number,
+): {
+  overZeroDigit: number;
+  num: number | string;
+} {
+  const overZeroDigit = countZeroFractionDigits(num);
+  if (threshold >= overZeroDigit) return { overZeroDigit: 0, num };
+  const length = num.toString().length;
+  console.log(length);
+  num = Number(num);
+  const nonZeroPart = Math.round(num * Math.pow(10, length - 2));
+  return { overZeroDigit, num: nonZeroPart };
 }

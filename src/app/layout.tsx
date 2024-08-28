@@ -6,9 +6,8 @@ import { Sidebar } from "@/app/_components/Sidebar";
 import { AppKit } from "@/context/web3modal";
 import { Topbar } from "@/app/_components/Topbar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from "react-toastify";
 import ClipLoader from "react-spinners/ClipLoader";
+import { Toaster } from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { useSpinnerStore } from "@/store/spinner";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -64,6 +63,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={NeueMachina.className}>
         <TRPCProvider>
+          <Toaster />
           <div
             className={`z-[90] absolute w-full h-full bg-gray-300 opacity-30 ${loading ? "block" : "hidden"}`}
           />
@@ -94,7 +94,6 @@ export default function RootLayout({
             </AppKit>
             <ReactQueryDevtools />
           </QueryClientProvider>
-          <ToastContainer />
         </TRPCProvider>
       </body>
     </html>

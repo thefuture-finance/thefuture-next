@@ -1,4 +1,4 @@
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 
 export const notify = (
   message: string,
@@ -6,7 +6,7 @@ export const notify = (
 ) => {
   toast[toastOptions.messageType || ToastMessageType.Success](message, {
     position: toastOptions?.position || ToastPosition.TOP_RIGHT,
-    autoClose: toastOptions.timeOut || 3000,
+    duration: toastOptions.timeOut || 3000,
   });
 };
 

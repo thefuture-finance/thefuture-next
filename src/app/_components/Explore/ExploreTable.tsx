@@ -41,13 +41,14 @@ import {
   UseQueryResult,
 } from "@tanstack/react-query";
 import { CoinData, getCoinData } from "@/server/action";
-import { roundNumber, roundPrice } from "@/utils/formatters";
+import { roundNumber, roundPrice, zeroFormatter } from "@/utils/formatters";
 import { FaRegStar, FaStar } from "react-icons/fa6";
 import Image from "next/image";
 import { trpc } from "@/app/_trpc/client";
 import { getQueryKey } from "@trpc/react-query";
 import { useWeb3ModalAccount } from "@web3modal/ethers/react";
 import { serverClient } from "@/app/_trpc/serverClient";
+import { zeroFormatterHtml } from "@/app/_utils/htmlFormatters";
 
 declare module "@tanstack/react-table" {
   interface TableMeta<TData extends RowData> {
@@ -108,7 +109,9 @@ export const columns: ColumnDef<CoinData>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className=" font-medium">{roundPrice(row.getValue("price"))}</div>
+      <div className=" font-medium">
+        {zeroFormatterHtml(roundPrice(row.getValue("price")), 4)}
+      </div>
     ),
   },
   {
@@ -129,7 +132,7 @@ export const columns: ColumnDef<CoinData>[] = [
         <div
           className={`font-medium ${row.getValue<number>("hour1") < 0 ? "text-red-300" : ""}`}
         >
-          {roundNumber(row.getValue("hour1"), 2) + "%"}
+          {Math.abs(Number(roundNumber(row.getValue("hour1"), 2))) + "%"}
         </div>
       );
     },
@@ -155,7 +158,7 @@ export const columns: ColumnDef<CoinData>[] = [
             (row.getValue<number>("hour24") < 0 ? "text-red-300" : "")
           }
         >
-          {roundNumber(row.getValue("hour24"), 2) + "%"}
+          {Math.abs(Number(roundNumber(row.getValue("hour24"), 2))) + "%"}
         </div>
       );
     },
@@ -181,7 +184,7 @@ export const columns: ColumnDef<CoinData>[] = [
             (row.getValue<number>("day7") < 0 ? "text-red-300" : "")
           }
         >
-          {roundNumber(row.getValue("day7"), 2) + "%"}
+          {Math.abs(Number(roundNumber(row.getValue("day7"), 2))) + "%"}
         </div>
       );
     },
@@ -207,7 +210,7 @@ export const columns: ColumnDef<CoinData>[] = [
             (row.getValue<number>("day30") < 0 ? "text-red-300" : "")
           }
         >
-          {roundNumber(row.getValue("day30"), 2) + "%"}
+          {Math.abs(Number(roundNumber(row.getValue("day30"), 2))) + "%"}
         </div>
       );
     },

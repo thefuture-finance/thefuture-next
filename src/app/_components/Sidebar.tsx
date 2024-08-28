@@ -11,6 +11,7 @@ import {
   FaCompass,
   FaLocationArrow,
   FaArrowRightArrowLeft,
+  FaBook,
 } from "react-icons/fa6";
 import { MdApps } from "react-icons/md";
 
@@ -43,6 +44,7 @@ import { useParams, usePathname } from "next/navigation";
 import ChangeNetwork from "./ChangeNetwork";
 import PinnedAppsSidebar from "./PinnedAppsSidebar";
 import { Suspense } from "react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
 export function Sidebar() {
   const selectedPage = usePathname().replace("/", "");
@@ -91,18 +93,6 @@ export function Sidebar() {
                 Favorites
               </span>
             </Link>
-            {/* <Link */}
-            {/*   href="/address-book" */}
-            {/*   className={ */}
-            {/*     "pl-3 flex items-center w-full hover:bg-[rgba(60,60,60)] rounded-lg py-2 " + */}
-            {/*     (selectedPage == "address-book" ? "bg-[rgba(50,50,50)]" : "") */}
-            {/*   } */}
-            {/* > */}
-            {/*   <FaAddressBook className={"w-6 h-6"} color="#F7F7F7" /> */}
-            {/*   <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2"> */}
-            {/*     Address Book */}
-            {/*   </span> */}
-            {/* </Link> */}
 
             <Link
               href="/explore"
@@ -116,6 +106,40 @@ export function Sidebar() {
                 Explore
               </span>
             </Link>
+
+            <Link
+              href="/education"
+              className={
+                "pl-3 flex items-center w-full hover:bg-[rgba(60,60,60)] rounded-lg py-2 " +
+                (selectedPage == "education" ? "bg-[rgba(50,50,50)]" : "")
+              }
+            >
+              <FaBook className={"w-6 h-6"} color="#F7F7F7" />
+              <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2">
+                Education
+              </span>
+            </Link>
+
+            <HoverCard openDelay={100}>
+              <HoverCardTrigger className="flex">
+                <div
+                  className={
+                    "pl-3 flex items-center w-full hover:bg-[rgba(30,30,30)] rounded-lg py-2 " +
+                    (selectedPage == "address-book"
+                      ? "bg-[rgba(50,50,50)]"
+                      : "")
+                  }
+                >
+                  <FaAddressBook className={"w-6 h-6"} color="#F7F7F7" />
+                  <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2">
+                    Address Book
+                  </span>
+                </div>
+              </HoverCardTrigger>
+              <HoverCardContent className="flex w-50 p-2 bg-[#0E0C12] text-[#F7F7F7]">
+                <div className="flex">Coming Soon</div>
+              </HoverCardContent>
+            </HoverCard>
           </div>
 
           <div className="flex flex-col gap-2 mt-2">
@@ -136,19 +160,6 @@ export function Sidebar() {
               </span>
             </Link>
 
-            {/* <Link */}
-            {/*   href="/send" */}
-            {/*   className={ */}
-            {/*     "pl-3 flex items-center w-full hover:bg-[rgba(60,60,60)] rounded-lg py-2 " + */}
-            {/*     (selectedPage == "send" ? "bg-[rgba(50,50,50)]" : "") */}
-            {/*   } */}
-            {/* > */}
-            {/*   <FaLocationArrow className={"w-6 h-6"} color="#F7F7F7" /> */}
-            {/*   <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2"> */}
-            {/*     Send */}
-            {/*   </span> */}
-            {/* </Link> */}
-
             <Link
               href="/swap"
               className={
@@ -161,6 +172,26 @@ export function Sidebar() {
                 Swap
               </span>
             </Link>
+
+            <HoverCard openDelay={100}>
+              <HoverCardTrigger className="flex">
+                <div
+                  className={
+                    "pl-3 flex items-center w-full hover:bg-[rgba(30,30,30)] rounded-lg py-2 " +
+                    (selectedPage == "send" ? "bg-[rgba(50,50,50)]" : "")
+                  }
+                >
+                  <FaLocationArrow className={"w-6 h-6"} color="#F7F7F7" />
+                  <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2">
+                    Send
+                  </span>
+                </div>
+              </HoverCardTrigger>
+              <HoverCardContent className="flex w-50 p-2 bg-[#0E0C12] text-[#F7F7F7]">
+                <div className="flex">Coming Soon</div>
+              </HoverCardContent>
+            </HoverCard>
+
             <Suspense>
               <PinnedAppsSidebar />
             </Suspense>

@@ -25,7 +25,7 @@ const sepolia = {
 
 const scroll = {
   chainId: 534352,
-  name: "Ethereum",
+  name: "Scroll",
   currency: "ETH",
   explorerUrl: "https://scrollscan.com/",
   rpcUrl: "https://rpc.scroll.io",
@@ -33,7 +33,7 @@ const scroll = {
 
 const scroll_sepolia = {
   chainId: 534351,
-  name: "Ethereum",
+  name: "Scroll Sepolia",
   currency: "ETH",
   explorerUrl: "https://sepolia.scrollscan.com/",
   rpcUrl: "https://sepolia-rpc.scroll.io",
@@ -58,21 +58,25 @@ const metadata = {
 const ethersConfig = defaultConfig({
   /*Required*/
   metadata,
-
   /*Optional*/
   enableEIP6963: true, // true by default
   enableInjected: true, // true by default
   enableCoinbase: true, // true by default
   rpcUrl: "...", // used for the Coinbase SDK
-  defaultChainId: 1, // used for the Coinbase SDK
+  defaultChainId: 534351, // used for the Coinbase SDK
 });
 
 // 5. Create a AppKit instance
 createWeb3Modal({
   ethersConfig,
-  chains: [scroll_sepolia],
+  defaultChain: scroll_sepolia,
+  chains: [scroll_sepolia, scroll],
   projectId,
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
+  chainImages: {
+    534351: "/assets/images/scroll.png",
+    534352: "/assets/images/scroll.png",
+  },
 });
 
 export function AppKit({ children }) {
