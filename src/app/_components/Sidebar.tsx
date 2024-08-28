@@ -12,8 +12,11 @@ import {
   FaLocationArrow,
   FaArrowRightArrowLeft,
   FaBook,
+  FaMoneyBillTrendUp,
+  FaGear,
 } from "react-icons/fa6";
-import { MdApps } from "react-icons/md";
+import { MdApps, MdAccountBalance } from "react-icons/md";
+import Image from "next/image";
 
 const DynamicConnectWallet = dynamic(
   () => import("@/app/_components/ConnectWallet"),
@@ -45,31 +48,40 @@ import ChangeNetwork from "./ChangeNetwork";
 import PinnedAppsSidebar from "./PinnedAppsSidebar";
 import { Suspense } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
+import { cn } from "@/lib/utils";
+import SideBarLink from "./SideBarLink";
+import SideBarLinkComing from "./SideBarLinkComing";
 
 export function Sidebar() {
   const selectedPage = usePathname().replace("/", "");
 
   return (
     <>
-      <div className="bg-red w-[280px] shrink-0 h-full py-6 flex flex-col items-center drag-none select-none">
-        <div className="flex flex-col grow overflow-y-auto small-scrollbar">
-          <Link href="/" className="flex w-full rounded-lg py-1">
-            <TheFutureIcon />
+      <div className="group-container group bg-red shrink-0 h-full py-6 flex flex-col items-center drag-none select-none hover:px-4 transition-all duration-300 ease-linear">
+        <div className="flex flex-col grow overflow-y-auto small-scrollbar w-full overflow-x-hidden">
+          <Link href="/" className="w-full rounded-lg py-2 h-16 flex shrink-0">
+            <div className="hidden group-hover:flex w-justify-center w-4 group-hover:grow transition-all duration-500 ease-linear h-full">
+              <TheFutureIcon className="w-full" />
+            </div>
+            <div className="flex group-hover:hidden w-full justify-center h-full">
+              <Image
+                alt={"theFuture"}
+                src={"/assets/images/theFutureLogo.png"}
+                className="w-8 h-8"
+                width={32}
+                height={32}
+              />
+            </div>
           </Link>
 
-          <div className="flex flex-col gap-2 mt-4 ">
-            <span className="font-bold text-[16px] leading-[15px] text-[rgba(247,247,247,0.6)]">
+          <div className="flex flex-col gap-1 mt-4 ">
+            <span className="font-bold text-[16px] leading-[15px] text-[rgba(247,247,247,0.6)] invisible group-hover:visible self-start w-0 group-hover:typing-demo">
               Overview
             </span>
-            <Link
-              href="/portfolio"
-              className={
-                "pl-3 flex items-center w-full hover:bg-[rgba(60,60,60)] rounded-lg py-2 " +
-                (selectedPage == "portfolio" ? "bg-[rgba(50,50,50)]" : "")
-              }
-            >
+
+            <SideBarLink href={"portfolio"} Name={"Portfolio"}>
               <FaWallet
-                className={"w-6 h-6"}
+                className={"w-6 h-6 text-black"}
                 color="#F7F7F7"
                 // color={`${
                 //   selectedPage == "portfolio"
@@ -77,130 +89,86 @@ export function Sidebar() {
                 //     : "fill-[#F7F7F7]"
                 // }`}
               />
-              <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2">
-                Portfolio
-              </span>
-            </Link>
-            <Link
-              href="/favorites"
-              className={
-                "pl-3 flex items-center w-full hover:bg-[rgba(60,60,60)] rounded-lg py-2 " +
-                (selectedPage == "favorites" ? "bg-[rgba(50,50,50)]" : "")
-              }
-            >
-              <FaStar className={"w-6 h-6"} color="#F7F7F7" />
-              <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2">
-                Favorites
-              </span>
-            </Link>
+            </SideBarLink>
 
-            <Link
-              href="/explore"
-              className={
-                "pl-3 flex items-center w-full hover:bg-[rgba(60,60,60)] rounded-lg py-2 " +
-                (selectedPage == "explore" ? "bg-[rgba(50,50,50)]" : "")
-              }
-            >
-              <FaCompass className={"w-6 h-6"} color="#F7F7F7" />
-              <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2">
-                Explore
-              </span>
-            </Link>
+            <SideBarLink href={"favorites"} Name={"Favorites"}>
+              <FaStar className={"w-6 h-6 text-black"} color="#F7F7F7" />
+            </SideBarLink>
 
-            <Link
-              href="/education"
-              className={
-                "pl-3 flex items-center w-full hover:bg-[rgba(60,60,60)] rounded-lg py-2 " +
-                (selectedPage == "education" ? "bg-[rgba(50,50,50)]" : "")
-              }
-            >
-              <FaBook className={"w-6 h-6"} color="#F7F7F7" />
-              <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2">
-                Education
-              </span>
-            </Link>
+            <SideBarLink href={"explore"} Name={"Explore"}>
+              <FaCompass className={"w-6 h-6 text-black"} color="#F7F7F7" />
+            </SideBarLink>
 
-            <HoverCard openDelay={100}>
-              <HoverCardTrigger className="flex">
-                <div
-                  className={
-                    "pl-3 flex items-center w-full hover:bg-[rgba(30,30,30)] rounded-lg py-2 " +
-                    (selectedPage == "address-book"
-                      ? "bg-[rgba(50,50,50)]"
-                      : "")
-                  }
-                >
-                  <FaAddressBook className={"w-6 h-6"} color="#F7F7F7" />
-                  <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2">
-                    Address Book
-                  </span>
-                </div>
-              </HoverCardTrigger>
-              <HoverCardContent className="flex w-50 p-2 bg-[#0E0C12] text-[#F7F7F7]">
-                <div className="flex">Coming Soon</div>
-              </HoverCardContent>
-            </HoverCard>
+            <SideBarLink href={"education"} Name={"Education"}>
+              <FaBook className={"w-6 h-6 text-black"} color="#F7F7F7" />
+            </SideBarLink>
+
+            <SideBarLinkComing href={"address-book"} name={"Address Book"}>
+              <FaAddressBook className={"w-6 h-6"} color="#F7F7F7" />
+            </SideBarLinkComing>
           </div>
 
           <div className="flex flex-col gap-2 mt-2">
-            <span className="font-bold text-[15px] leading-[25px] text-[rgba(247,247,247,0.6)]">
+            <span className="font-bold text-[15px] leading-[25px] text-[rgba(247,247,247,0.6)] invisible group-hover:visible w-0 self-start group-hover:typing-demo">
               Apps
             </span>
 
-            <Link
-              href="/apps"
-              className={
-                "pl-3 flex items-center w-full hover:bg-[rgba(60,60,60)] rounded-lg py-2 " +
-                (selectedPage == "apps" ? "bg-[rgba(50,50,50)]" : "")
-              }
-            >
+            <SideBarLink href={"apps"} Name={"Apps"}>
               <MdApps className={"w-6 h-6"} color="#F7F7F7" />
-              <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2">
-                Apps
-              </span>
-            </Link>
-
-            <Link
-              href="/swap"
-              className={
-                "pl-3 flex items-center w-full hover:bg-[rgba(60,60,60)] rounded-lg py-2 " +
-                (selectedPage == "swap" ? "bg-[rgba(50,50,50)]" : "")
-              }
-            >
+            </SideBarLink>
+            <SideBarLink href={"swap"} Name={"Bridge & Swap"}>
               <FaArrowRightArrowLeft className={"w-6 h-6"} color="#F7F7F7" />
-              <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2">
-                Swap
-              </span>
-            </Link>
+            </SideBarLink>
 
-            <HoverCard openDelay={100}>
-              <HoverCardTrigger className="flex">
-                <div
-                  className={
-                    "pl-3 flex items-center w-full hover:bg-[rgba(30,30,30)] rounded-lg py-2 " +
-                    (selectedPage == "send" ? "bg-[rgba(50,50,50)]" : "")
-                  }
-                >
-                  <FaLocationArrow className={"w-6 h-6"} color="#F7F7F7" />
-                  <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading[24px] font-light ml-2">
-                    Send
-                  </span>
-                </div>
-              </HoverCardTrigger>
-              <HoverCardContent className="flex w-50 p-2 bg-[#0E0C12] text-[#F7F7F7]">
-                <div className="flex">Coming Soon</div>
-              </HoverCardContent>
-            </HoverCard>
+            <SideBarLinkComing href={"send"} name={"Send"}>
+              <FaLocationArrow className={"w-6 h-6"} color="#F7F7F7" />
+            </SideBarLinkComing>
+
+            <SideBarLinkComing href={"earn"} name={"Earn"}>
+              <FaMoneyBillTrendUp className={"w-6 h-6"} color="#F7F7F7" />
+            </SideBarLinkComing>
+
+            <SideBarLinkComing href={"settings"} name={"Settings"}>
+              <FaGear className={"w-6 h-6"} color="#F7F7F7" />
+            </SideBarLinkComing>
 
             <Suspense>
               <PinnedAppsSidebar />
             </Suspense>
           </div>
         </div>
-        <div className="flex flex-col gap-3 items-center w-full px-6 pt-3">
+        <div className="flex-col gap-3 items-center w-full pt-8 hidden group-hover:flex transition-all duration-500 ease-out">
           <DynamicSelectAccountModal />
           <ChangeNetwork />
           <DynamicConnectWallet />
+        </div>
+        <div className="flex-col gap-5 items-center w-full pt-8 flex group-hover:hidden ">
+          <MdAccountBalance
+            className={"w-6 h-6 text-black"}
+            color="#F7F7F7"
+            // color={`${
+            //   selectedPage == "portfolio"
+            //     ? "fill-[#F7F7F7]"
+            //     : "fill-[#F7F7F7]"
+            // }`}
+          />
+          <Image
+            alt={"scroll"}
+            src={"/assets/images/scroll.png"}
+            className="w-6 h-6"
+            width={24}
+            height={24}
+          />
+
+          <FaWallet
+            className={"w-6 h-6 text-black"}
+            color="#F7F7F7"
+            // color={`${
+            //   selectedPage == "portfolio"
+            //     ? "fill-[#F7F7F7]"
+            //     : "fill-[#F7F7F7]"
+            // }`}
+          />
         </div>
       </div>
     </>

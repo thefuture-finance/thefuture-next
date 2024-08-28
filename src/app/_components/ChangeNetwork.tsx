@@ -18,9 +18,11 @@ export default function ChangeNetwork() {
   return (
     <div
       onClick={() => open({ view: "Networks" })}
-      className="bg-[rgba(205,193,176)] h-[43px] w-full rounded-2xl flex justify-center items-center cursor-pointer hover:bg-[rgba(185,173,156)]"
+      className="text-xl font-bold bg-[rgba(205,193,176)] w-full h-[32px] rounded-2xl cursor-pointer hover:bg-[rgba(185,173,156)] flex justify-center items-center"
     >
-      <ScrollNameIcon />
+      <div className="typing-demo w-[6ch] flex justify-center text-center">
+        <span className="w-full">Scroll</span>
+      </div>
     </div>
   );
 }

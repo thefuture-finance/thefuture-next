@@ -29,6 +29,7 @@ import { login } from "@/utils/auth";
 import { useSpinnerStore } from "@/store/spinner";
 import { FaRegCopy } from "react-icons/fa6";
 import { serverClient } from "../_trpc/serverClient";
+import { cn } from "@/lib/utils";
 
 export default function SelectAccountModal() {
   const { address, isConnected, chainId } = useWeb3ModalAccount();
@@ -128,9 +129,11 @@ export default function SelectAccountModal() {
     return (
       <div
         onClick={handleLogin}
-        className="cursor-pointer bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center hover:bg-[rgba(55,55,55)] text-[#F7F7F7]"
+        className="cursor-pointer bg-[rgba(65,65,65)] h-[32px] rounded-2xl flex w-full justify-center items-center hover:bg-[rgba(55,55,55)] text-[#F7F7F7]"
       >
-        Sign In
+        <div className="typing-demo w-[8ch] text-center">
+          <span className="w-full">Sign In</span>
+        </div>
       </div>
     );
 
@@ -138,13 +141,23 @@ export default function SelectAccountModal() {
     <Dialog open={openSelect} onOpenChange={setOpenSelect}>
       <DialogTrigger asChild>
         <Button
-          className={`bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center  flex-col] text-[16px] ${!accountInfo.selectedAccount.isSmart ? "hover:bg-[rgba(55,55,55)]" : "bg-[rgba(64,150,166)]"}`}
+          className={cn(
+            "bg-[rgba(65,65,65)] h-[32px] rounded-2xl flex w-full justify-center items-center text-[16px] ",
+            {
+              "hover:bg-[rgba(55,55,55)]": !accountInfo.selectedAccount.isSmart,
+              "bg-[rgba(64,150,166)]": accountInfo.selectedAccount.isSmart,
+            },
+          )}
         >
           {isValidEthereumAddress(accountInfo.selectedAccount.address) &&
           !!accountInfo?.selectedAccount?.isSmart ? (
-            <div>{`${extractParts(accountInfo.selectedAccount.address, 6, 4)} | ${balance} ETH`}</div>
+            <div className="typing-demo text-[14px] leading-[12px] w-[18ch] text-center">
+              <span className="w-full">
+                {`${extractParts(accountInfo.selectedAccount.address, 6, 4)} | ${balance} ETH`}
+              </span>
+            </div>
           ) : (
-            "Use Smart Account"
+            <div className="typing-demo w-[14ch]">Use Smart Account</div>
           )}
         </Button>
       </DialogTrigger>
@@ -212,7 +225,7 @@ export default function SelectAccountModal() {
                 onClick={() => {
                   setOpenCreate(true);
                 }}
-                className="bg-[rgba(65,65,65)] h-[43px] rounded-2xl  flex w-full justify-center items-center hover:bg-[rgba(55,55,55)] flex-col"
+                className="bg-[rgba(65,65,65)] h-[32px] rounded-2xl  flex w-full justify-center items-center hover:bg-[rgba(55,55,55)] flex-col"
               >
                 <div>Create Account</div>
               </Button>

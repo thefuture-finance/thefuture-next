@@ -15,6 +15,7 @@ import { trpc } from "../_trpc/client";
 import { useAccountInfo } from "@/store/getAccountInfo";
 import dayjs from "dayjs";
 import { useSpinnerStore } from "@/store/spinner";
+import { cn } from "@/lib/utils";
 
 export default function ConnectButton() {
   const { open, close } = useWeb3Modal();
@@ -63,11 +64,17 @@ export default function ConnectButton() {
 
   return (
     <div
-      className={`bg-[rgba(65,65,65)] h-[43px] rounded-2xl flex w-full justify-center items-center ${accountInfo.selectedAccount.isSmart ? "hover:bg-[rgba(55,55,55)]" : "bg-[rgba(64,150,166)]"} `}
+      className={cn(
+        "bg-[rgba(65,65,65)] h-[32px] rounded-2xl flex w-full justify-center items-center hover:bg-[rgba(55,55,55)]",
+        {
+          "hover:bg-[rgba(55,55,55)]": accountInfo?.selectedAccount?.isSmart,
+          // "bg-[rgba(64,150,166)]": !accountInfo?.selectedAccount?.isSmart,
+        },
+      )}
     >
-      <div className="w-full text-[#F7F7F7]">
+      <div className="text-[14px] leading-[12px] w-full grow flex justify-center text-md text-[#F7F7F7]">
         {isConnected ? (
-          <div className="w-full">
+          <div className="typing-demo w-[20ch] text-center">
             <button
               className="w-full"
               onClick={() => open({ view: "Account" })}
@@ -76,7 +83,7 @@ export default function ConnectButton() {
             </button>
           </div>
         ) : (
-          <div className="w-full">
+          <div className="typing-demo w-[14ch] text-center">
             <button className="w-full" onClick={() => handleConnect()}>
               Connect Wallet
             </button>

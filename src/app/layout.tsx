@@ -85,10 +85,10 @@ export default function RootLayout({
                     <span className="text-[#F7F7F7] text-[16px] leading-[19px] font-semibold">
                       TheFuture All Rights Reserverd 2024
                     </span>
-                    <span className="absolute right-0 mr-4 text-[#F7F7F7]">
-                      beta v0.1.0
-                    </span>
                   </div>
+                  <span className="absolute bottom-[6px] right-3 mr-4 text-[#F7F7F7]">
+                    beta v0.1.0
+                  </span>
                 </div>
               </div>
             </AppKit>

@@ -16,6 +16,50 @@ body {
   width: 100vw;
   font-family: NeueMachina;
 }
+/**/
+/* .typing-demo { */
+/* animation: */
+/*   typing 0.5s steps(14), */
+/*   0.5s step-end infinite alternate; */
+/*   white-space: nowrap; */
+/*   overflow: hidden; */
+/* } */
+/* @keyframes typing { */
+/*   from { */
+/*     width: 0; */
+/*   } */
+/* } */
+
+.typing-demo {
+  animation:
+    deleting 0.2s steps(8),
+    1s step-start infinite alternate;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Typing on hover */
+.group-container:hover .typing-demo {
+  animation:
+    typing 0.5s steps(10),
+    0.5s step-end infinite alternate;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+}
+
+@keyframes deleting {
+  from {
+    display: flex;
+  }
+  to {
+    width: 0;
+    display: none;
+  }
+}
 
 @font-face {
   font-family: "NeueMachina";
@@ -130,7 +174,7 @@ body {
 
 .grid-container {
   --grid-layout-gap: 24px;
-  --grid-item--min-width: 248px;
+  --grid-item--min-width: 280px;
   /* --grid-item--max-width: 400px; */
 
   display: grid;

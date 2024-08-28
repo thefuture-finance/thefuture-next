@@ -6,6 +6,7 @@ import Image from "next/image";
 import { AppCardData } from "./apps/AppCard";
 import { useSearchParams } from "next/navigation";
 import { trpc } from "../_trpc/client";
+import { cn } from "@/lib/utils";
 
 export default function PinnedAppsSidebar() {
   const searchParams = useSearchParams();
@@ -22,12 +23,12 @@ export default function PinnedAppsSidebar() {
           <Link
             key={app.name}
             href={`/app/?appUrl=${app.appUrl}`}
-            className={
-              "pl-3 flex items-center w-full hover:bg-[rgba(60,60,60)] rounded-lg py-2 " +
-              (app.appUrl == searchParams.get("appUrl")
-                ? "bg-[rgba(50,50,50)]"
-                : "")
-            }
+            className={cn(
+              "flex p-2 group-hover:pl-3 rounded-lg w-full items-center group-hover:w-full hover:bg-[rgba(60,60,60)]",
+              {
+                "bg-[rgba(50,50,50)]": app.appUrl == searchParams.get("appUrl"),
+              },
+            )}
           >
             <Image
               alt={app.name}
@@ -36,7 +37,7 @@ export default function PinnedAppsSidebar() {
               width={24}
               height={24}
             />
-            <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[18px] leading-[24px] font-light ml-2">
+            <span className="text-[#F7F7F7] hover:text-[#F9F9F9] text-[16px] leading-[20px] font-light ml-2 hidden group-hover:flex typing-demo w-[13.3ch]">
               {app.name}
             </span>
           </Link>
